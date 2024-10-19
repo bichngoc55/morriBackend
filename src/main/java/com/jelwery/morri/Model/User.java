@@ -10,10 +10,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection="users")
 @Data
@@ -42,6 +46,9 @@ public class User {
     private String luongCoBan;
     @DBRef
     private ArrayList<Salary> bangLuong;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name())); // Assuming role is of type ROLE
+    }
 
 
 

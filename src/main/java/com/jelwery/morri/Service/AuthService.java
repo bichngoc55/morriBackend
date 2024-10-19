@@ -51,7 +51,7 @@ public class AuthService {
     public Map<String, Object> loginUser(LoginDTO loginDTO)  throws Exception {
         Optional<User> existingUser = userRepository.findByEmail(loginDTO.getEmail() );
         if (existingUser.isPresent() && passwordEncoder.matches(loginDTO.getPassword(), existingUser.get().getPassword())) {
-            String token = jwtUtil.generateToken(existingUser.get().getEmail());
+            String token = jwtUtil.generateToken(existingUser.get().getEmail(), existingUser.get().getRole());
             Map<String, Object> response = new HashMap<>();
             response.put("user", existingUser.get());
             response.put("accessToken", token);
@@ -78,7 +78,7 @@ public class AuthService {
             return ResponseEntity.status(400).body("Invalid email");
         }
         User user = userOptional.get();
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(),user.getRole() );
 
         String resetLink = "http://..." + token;
         // Send the email
