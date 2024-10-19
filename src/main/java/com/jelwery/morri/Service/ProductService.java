@@ -5,6 +5,8 @@ import com.jelwery.morri.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
     @Autowired
@@ -13,6 +15,9 @@ public class ProductService {
     // create hehe
     public Product createProduct(Product product) {
         return productRepository.save(product);
+    }
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
 }

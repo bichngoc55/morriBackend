@@ -22,7 +22,7 @@ public class Customer {
     private String phoneNumber;
 
     private Date dateOfBirth;
-    private ROLE role = ROLE.customer;
+    private ROLE role = ROLE.CUSTOMER;
     private Date ngayDangKyThanhVien;
     @Indexed(unique = true)
     private String email;
