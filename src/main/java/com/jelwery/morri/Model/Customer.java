@@ -19,6 +19,7 @@ public class Customer {
     private String name;
 
     private GENDER gioiTinh;
+    private String phoneNumber;
 
     private Date dateOfBirth;
     private ROLE role = ROLE.customer;
