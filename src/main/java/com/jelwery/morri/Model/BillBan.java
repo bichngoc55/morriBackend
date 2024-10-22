@@ -18,6 +18,7 @@ public class BillBan {
     @Id
     private String id;
     private Double totalPrice;
+    private BillStatus status;
     private PaymentMethod paymentMethod;
     @DBRef
     private Customer customerId;
@@ -27,4 +28,9 @@ public class BillBan {
     private Double phuThu = 0.0;
     @CreatedDate
     private LocalDateTime createdAt;
+    public enum BillStatus
+        {
+        ON_DELIVERY, CANCELLED, COMPLETED
+            
+        }
 }
