@@ -37,6 +37,7 @@ public class User {
     private LocalDateTime dateOfBirth;
     private GENDER gender;
     private String phoneNumber;
+    private List<Absence> absences;
     @Indexed(unique = true)
     private String cccd;
     private String address;
@@ -50,6 +51,22 @@ public class User {
         return List.of(new SimpleGrantedAuthority(role.name())); // Assuming role is of type ROLE
     }
 
+public class Absence {
+     @CreatedDate
+    private LocalDate date;
+    private String reason;
+    // Getters and Setters
+    public LocalDate getDate() {
+        return date;
+    }
+ 
+    public String getReason() {
+        return reason;
+    }
 
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+}
 
 }
