@@ -21,5 +21,9 @@ public class ProductController {
     @GetMapping("/")
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
+    } 
+    @PatchMapping("/update/{productId}")
+    public Product updateProduct(@PathVariable("productId") String productId, @RequestBody Product updatedProduct) {
+        return productService.updateProduct(productId, updatedProduct);
     }
 }

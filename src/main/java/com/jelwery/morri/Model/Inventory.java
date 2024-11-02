@@ -3,9 +3,9 @@ package com.jelwery.morri.Model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Id; 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,10 +18,11 @@ public class Inventory {
     @Id
     private String id;
     private String name;
+    // total quantity nha
     private int quantity;
-    @DBRef
+    // @DocumentReference
     private Supplier supplierId;
-    @DBRef
+    // @DocumentReference
     private User userId;
     @CreatedDate
     private LocalDateTime ngayNhapKho;
