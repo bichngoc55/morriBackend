@@ -3,9 +3,9 @@ package com.jelwery.morri.Model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Id; 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,10 +18,10 @@ public class BillMua {
     private String id;
     private Double totalPrice;
     private PaymentMethod paymentMethod;
-    @DBRef
+    @DocumentReference
     private Customer customerId;
     private ArrayList<Product> dsSanPhamDaMua;
-    @DBRef
+    @DocumentReference
     private User staffId;
     @CreatedDate
     private LocalDateTime createdAt;

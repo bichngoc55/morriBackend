@@ -50,6 +50,7 @@ public class AuthService {
     }
     public Map<String, Object> loginUser(LoginDTO loginDTO)  throws Exception {
         Optional<User> existingUser = userRepository.findByEmail(loginDTO.getEmail() );
+        System.out.println(existingUser.isPresent());
         if (existingUser.isPresent() && passwordEncoder.matches(loginDTO.getPassword(), existingUser.get().getPassword())) {
             String token = jwtUtil.generateToken(existingUser.get().getEmail(), existingUser.get().getRole());
             Map<String, Object> response = new HashMap<>();

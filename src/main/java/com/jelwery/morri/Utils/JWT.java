@@ -48,33 +48,11 @@ public class JWT {
 
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
-    }
-//    public boolean validateToken(String token, String email) {
-//        return extractEmail(token).equals(email) && !isTokenExpired(token);
-//    }
+    } 
     public String getEncodedSecret() {
         return Base64.getEncoder().encodeToString(secret.getBytes());
     }
-//    public String extractEmail(String token) {
-//        return extractClaim(token, Claims::getSubject);
-//    }
-
-//    public Date extractExpiration(String token) {
-//        return extractClaim(token, Claims::getExpiration);
-//    }
-
-//    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-//        final Claims claims =  Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
-//        return claimsResolver.apply(claims);
-//    }
-//    public ROLE extractRole(String token) {
-//        Claims claims = Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
-//        return ROLE.valueOf(claims.get("role").toString());
-//    }
-
-//    private boolean isTokenExpired(String token) {
-//        return extractExpiration(token).before(new Date());
-//    }
+ 
     private Key getSigningKey() {
          byte[] secretBytes = secret.getBytes();
         return new SecretKeySpec(secretBytes, SignatureAlgorithm.HS256.getJcaName());
