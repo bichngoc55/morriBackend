@@ -49,7 +49,7 @@ public class User {
     @DocumentReference
     private ArrayList<Salary> bangLuong;
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name())); // Assuming role is of type ROLE
+        return List.of(new SimpleGrantedAuthority(role.name()));  
     }
 
 public class Absence {
