@@ -16,5 +16,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findByNameContainingIgnoreCase(String name);
     List<Product> findByLoaiSanPham(TYPE type);
     List<Product> findByQuantityLessThan(int threshold);
-    List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
+    List<Product> findByCostPriceBetween(Double minCostPrice, Double maxCostPrice);
+    List<Product> findBySellingPriceBetween(Double minSellingPrice, Double maxSellingPrice);
 }

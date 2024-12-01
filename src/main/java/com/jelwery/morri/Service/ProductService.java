@@ -3,7 +3,10 @@ package com.jelwery.morri.Service;
  import com.jelwery.morri.Exception.DuplicateResourceException;
  import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.Product;
+import com.jelwery.morri.Model.Supplier;
+import com.jelwery.morri.Repository.InventoryRepository;
 import com.jelwery.morri.Repository.ProductRepository;
+import com.jelwery.morri.Repository.SupplierRespository;
 import com.jelwery.morri.Validation.ProductValidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +24,33 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private  ProductValidation productValidator;
+     @Autowired
+    private SupplierRespository supplierRespository;
 
     public Product createProduct(Product product) {
         productValidator.validateProduct(product);
         if (productRepository.findByName(product.getName()).isPresent()) {
             throw new DuplicateResourceException("Product with name " + product.getName() + " already exists");
         }
-        return productRepository.save(product);
+    
+        Supplier supplier = supplierRespository.findById(product.getSupplierId().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID"));
+    
+        product.setSupplierId(supplier);
+    
+        Product savedProduct = productRepository.save(product);
+        return savedProduct;
     }
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     } 
     public Product updateProduct(String productId, Product updatedProduct) {  
         Product existingProduct = productRepository.findById(productId)
-        .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
- 
-        if (updatedProduct.getName() != null) { 
-            if (!updatedProduct.getName().equals(existingProduct.getName()) && 
-                productRepository.findByName(updatedProduct.getName()).isPresent()) {
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+        if (updatedProduct.getName() != null) {
+            if (!updatedProduct.getName().equals(existingProduct.getName()) &&
+                    productRepository.findByName(updatedProduct.getName()).isPresent()) {
                 throw new DuplicateResourceException("Product with name " + updatedProduct.getName() + " already exists");
             }
             existingProduct.setName(updatedProduct.getName());
@@ -48,8 +60,12 @@ public class ProductService {
             existingProduct.setDescription(updatedProduct.getDescription());
         }
 
-        if (updatedProduct.getPrice() != null) {
-            existingProduct.setPrice(updatedProduct.getPrice());
+        if (updatedProduct.getCostPrice() != null) {
+            existingProduct.setCostPrice(updatedProduct.getCostPrice());
+        }
+
+        if (updatedProduct.getSellingPrice() != null) {
+            existingProduct.setSellingPrice(updatedProduct.getSellingPrice());
         }
 
         if (updatedProduct.getImageUrl() != null) {
@@ -59,12 +75,12 @@ public class ProductService {
         if (updatedProduct.getLoaiSanPham() != null) {
             existingProduct.setLoaiSanPham(updatedProduct.getLoaiSanPham());
         }
- 
-        if (updatedProduct.getQuantity() != 0) {   
+
+        if (updatedProduct.getQuantity() != 0) {
             existingProduct.setQuantity(updatedProduct.getQuantity());
         }
 
-        if (updatedProduct.getWeight() != 0) {  
+        if (updatedProduct.getWeight() != 0) {
             existingProduct.setWeight(updatedProduct.getWeight());
         }
 
@@ -75,8 +91,12 @@ public class ProductService {
         if (updatedProduct.getChiPhiPhatSinh() != null) {
             existingProduct.setChiPhiPhatSinh(updatedProduct.getChiPhiPhatSinh());
         }
- 
-        // productValidator.validateProduct(existingProduct);
+
+        if (updatedProduct.getSupplierId() != null) {
+            existingProduct.setSupplierId(updatedProduct.getSupplierId());
+        }
+
+        productValidator.validateProduct(existingProduct);
         return productRepository.save(existingProduct);
         } 
 }
