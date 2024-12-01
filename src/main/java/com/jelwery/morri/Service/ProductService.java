@@ -1,17 +1,17 @@
 package com.jelwery.morri.Service;
 
- import com.jelwery.morri.Exception.DuplicateResourceException;
- import com.jelwery.morri.Exception.ResourceNotFoundException;
-import com.jelwery.morri.Model.Product;
-import com.jelwery.morri.Repository.ProductRepository;
-import com.jelwery.morri.Validation.ProductValidation;
+ import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List; 
+import com.jelwery.morri.Exception.DuplicateResourceException; 
+import com.jelwery.morri.Exception.ResourceNotFoundException;
+import com.jelwery.morri.Model.Product;
+import com.jelwery.morri.Repository.ProductRepository;
+import com.jelwery.morri.Validation.ProductValidation; 
 
 @Service
 @RestController
@@ -24,8 +24,8 @@ public class ProductService {
 
     public Product createProduct(Product product) {
         productValidator.validateProduct(product);
-        if (productRepository.findByName(product.getName()).isPresent()) {
-            throw new DuplicateResourceException("Product with name " + product.getName() + " already exists");
+        if (productRepository.findByName(product.getTenSanPham()).isPresent()) {
+            throw new DuplicateResourceException("Product with name " + product.getTenSanPham() + " already exists");
         }
         return productRepository.save(product);
     }
@@ -36,40 +36,47 @@ public class ProductService {
         Product existingProduct = productRepository.findById(productId)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
  
-        if (updatedProduct.getName() != null) { 
-            if (!updatedProduct.getName().equals(existingProduct.getName()) && 
-                productRepository.findByName(updatedProduct.getName()).isPresent()) {
-                throw new DuplicateResourceException("Product with name " + updatedProduct.getName() + " already exists");
+        if (updatedProduct.getTenSanPham() != null) { 
+            if (!updatedProduct.getTenSanPham().equals(existingProduct.getTenSanPham()) && 
+                productRepository.findByName(updatedProduct.getTenSanPham()).isPresent()) {
+                throw new DuplicateResourceException("Product with name " + updatedProduct.getTenSanPham() + " already exists");
             }
-            existingProduct.setName(updatedProduct.getName());
+            existingProduct.setTenSanPham(updatedProduct.getTenSanPham());
         }
 
-        if (updatedProduct.getDescription() != null) {
-            existingProduct.setDescription(updatedProduct.getDescription());
+        if (updatedProduct.getMoTa() != null) {
+            existingProduct.setMoTa(updatedProduct.getMoTa());
         }
 
-        if (updatedProduct.getPrice() != null) {
-            existingProduct.setPrice(updatedProduct.getPrice());
+        if (updatedProduct.getGiaNhap() != null) {
+            existingProduct.setGiaNhap(updatedProduct.getGiaNhap());
         }
 
-        if (updatedProduct.getImageUrl() != null) {
-            existingProduct.setImageUrl(updatedProduct.getImageUrl());
+        if (updatedProduct.getGiaBan() != null) {
+            existingProduct.setGiaBan(updatedProduct.getGiaBan());
+        }
+
+        if (updatedProduct.getHinhAnh() != null) {
+            existingProduct.setHinhAnh(updatedProduct.getHinhAnh());
         }
 
         if (updatedProduct.getLoaiSanPham() != null) {
             existingProduct.setLoaiSanPham(updatedProduct.getLoaiSanPham());
         }
+        if (updatedProduct.getChatLieu() != null) {
+            existingProduct.setChatLieu(updatedProduct.getChatLieu());
+        }
  
-        if (updatedProduct.getQuantity() != 0) {   
-            existingProduct.setQuantity(updatedProduct.getQuantity());
+        if (updatedProduct.getSoLuong() != 0) {   
+            existingProduct.setSoLuong(updatedProduct.getSoLuong());
         }
 
-        if (updatedProduct.getWeight() != 0) {  
-            existingProduct.setWeight(updatedProduct.getWeight());
+        if (updatedProduct.getKhoiLuong() != 0) {  
+            existingProduct.setKhoiLuong(updatedProduct.getKhoiLuong());
         }
 
-        if (updatedProduct.getStatus() != null) {
-            existingProduct.setStatus(updatedProduct.getStatus());
+        if (updatedProduct.getTinhTrang() != null) {
+            existingProduct.setTinhTrang(updatedProduct.getTinhTrang());
         }
 
         if (updatedProduct.getChiPhiPhatSinh() != null) {
