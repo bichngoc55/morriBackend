@@ -16,7 +16,6 @@ public class ServiceController {
     @Autowired
     private DichVuService dichVuService;
 
-    //create
     @PostMapping("/create")
     public Service createService(@Valid @RequestBody Service service) throws  Exception {
         System.out.println(service);

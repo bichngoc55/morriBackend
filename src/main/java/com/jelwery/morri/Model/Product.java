@@ -35,10 +35,8 @@ public class Product {
     private double weight;
     private STATUS status;
     private String chiPhiPhatSinh;
-    //  @DocumentReference(lazy = true)
     @Reference
     @DBRef
-    // @DBRef
     private Supplier supplierId;
     @CreatedDate
     private LocalDateTime entryDate;

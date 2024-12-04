@@ -2,8 +2,7 @@ package com.jelwery.morri.Controller;
 
 import com.jelwery.morri.DTO.LoginDTO;
 import com.jelwery.morri.Model.User;
-import com.jelwery.morri.Service.AuthService;
-import com.jelwery.morri.Service.UserService;
+import com.jelwery.morri.Service.AuthService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
