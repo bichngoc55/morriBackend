@@ -1,9 +1,5 @@
 package com.jelwery.morri.Model;
 
-public enum MATERIAL {
-    BACKKIM,
-    VANG,
-    BAC,
-    KIMCUONG,
-    TITANIUM
+public enum Material {
+    BachKim, Vang, Bac, KimCuong,Titanium
 }
