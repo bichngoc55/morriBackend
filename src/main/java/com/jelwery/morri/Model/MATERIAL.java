@@ -1,6 +1,6 @@
 package com.jelwery.morri.Model;
 
-public enum MATERIAL {
+public enum Material{
     BACKKIM,
     VANG,
     BAC,
