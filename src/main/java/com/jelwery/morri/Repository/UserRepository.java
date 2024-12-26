@@ -1,11 +1,12 @@
 package com.jelwery.morri.Repository;
 
-import com.jelwery.morri.Model.User;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.Optional;
+import com.jelwery.morri.Model.User;
 
 public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
-
+    Optional<User> findByPhoneNumber(String phoneNumber);
 }

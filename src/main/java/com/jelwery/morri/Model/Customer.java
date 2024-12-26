@@ -1,20 +1,23 @@
 package com.jelwery.morri.Model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed; 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.ArrayList;
-import java.util.Date;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 @Document(collection="customer")
 @Data
 @NoArgsConstructor
 public class Customer {
     @Id
-    private String Id;
+    @Field("_id") 
+    private String id;
 
     private String name;
 
