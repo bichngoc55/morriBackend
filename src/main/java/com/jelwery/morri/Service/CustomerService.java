@@ -1,14 +1,15 @@
 package com.jelwery.morri.Service;
 
-import com.jelwery.morri.Model.Customer;
-import com.jelwery.morri.Model.User;
-import com.jelwery.morri.Repository.CustomerRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.jelwery.morri.Model.Customer;
+import com.jelwery.morri.Model.User;
+import com.jelwery.morri.Repository.CustomerRepository;
 
 @Service
 public class CustomerService {
@@ -48,7 +49,7 @@ public class CustomerService {
             if (customer.getEmail() != null) {
                 existingCustomer.setEmail(customer.getEmail());
             }
-            if (customer.getDanhSachSanPhamDaBan() != null) {
+            if (customer.getDanhSachSanPhamDaMua() != null) {
                 existingCustomer.setPhoneNumber(customer.getPhoneNumber());
             }
             if (customer.getPhoneNumber() != null) {

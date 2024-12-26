@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed; 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,8 +28,12 @@ public class Customer {
     private String email;
     @Indexed(unique = true)
     private String password;
-    @DocumentReference
-    private ArrayList<BillMua> danhSachSanPhamDaMua;
-    @DocumentReference
-    private ArrayList<BillBan> danhSachSanPhamDaBan;
+    // @DBRef
+    // private ArrayList<BillBan> danhSachSanPhamDaMua;
+    // @DBRef
+    // private ArrayList<BillMua> danhSachSanPhamDaBan;
+
+    private ArrayList<String> danhSachSanPhamDaMua; 
+
+    
 }

@@ -1,8 +1,11 @@
 package com.jelwery.morri.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
+import org.springframework.beans.propertyeditors.CharArrayPropertyEditor;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,8 +43,17 @@ public class BillBanService {
 
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
+
+        if (customer.getId() == null) {
+            throw new IllegalArgumentException("Customer ID is null");
+        }
+            
+                // Thiết lập customer cho BillBan
         billBan.setCustomer(customer);
+            
+                // Thêm BillBan vào danh sách các sản phẩm đã mua của khách hàng
        
+        
 
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
         Product product = productRepository.findById(orderDetail.getProduct().getId())
@@ -59,6 +71,14 @@ public class BillBanService {
 
         BillBan savedBillBan = billBanRepository.save(billBan);
 
+        ArrayList<String> newList = customer.getDanhSachSanPhamDaMua();
+        if (newList == null) {
+            newList = new ArrayList<>();
+        }
+        newList.add(savedBillBan.getId());
+        customer.setDanhSachSanPhamDaMua(newList);
+        
+        customerRepository.save(customer);
           // Cap nhat so luong con trong kho
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = orderDetail.getProduct();
@@ -66,6 +86,7 @@ public class BillBanService {
             productRepository.save(product);
         }
     
+        
 
         return savedBillBan;
     }
