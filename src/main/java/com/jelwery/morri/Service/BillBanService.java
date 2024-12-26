@@ -30,19 +30,18 @@ public class BillBanService {
     private BillBanRepository billBanRepository;
     @Autowired
     private ProductRepository productRepository;
+   
     public BillBan createBillBan(BillBan billBan) {
 
-        User staff = userRepository.findByPhoneNumber(billBan.getStaff().getPhoneNumber())
+        User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
     
         billBan.setStaff(staff);
 
-        // Truy vấn customer từ database với String ID
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
-
-
         billBan.setCustomer(customer);
+       
 
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
         Product product = productRepository.findById(orderDetail.getProduct().getId())
@@ -57,6 +56,7 @@ public class BillBanService {
         }
         orderDetail.setProduct(product);
     }
+
         BillBan savedBillBan = billBanRepository.save(billBan);
 
           // Cap nhat so luong con trong kho
@@ -73,6 +73,9 @@ public class BillBanService {
      public List<BillBan> getAllBillBan() {
         return billBanRepository.findAll();
     } 
+    public BillBan getBillBanById(String id) {
+        return billBanRepository.findById(id).orElse(null);
+    }
 
     public BillBan updateBillBanStatus(String billBanId, BillStatus newStatus) {
     BillBan existingBillBan = billBanRepository.findById(billBanId)

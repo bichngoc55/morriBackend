@@ -28,6 +28,10 @@ public class BillBanController {
     public List<BillBan> getAllBillBan() {
         return billBanService.getAllBillBan();
     } 
+    @GetMapping("/{billBanId}")
+    public BillBan getBillBan(@PathVariable("billBanId") String billBanId) 
+    {return billBanService.getBillBanById(billBanId);}
+    
     @PatchMapping("/update/{billBanId}")
     public BillBan updateBillBan(@PathVariable("billBanId") String billBanId, @RequestBody BillBan updatedBillBan) {
         return billBanService.updateBillBan(billBanId, updatedBillBan);

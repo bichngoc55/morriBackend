@@ -5,8 +5,9 @@ import java.util.ArrayList;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Reference;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,13 +21,12 @@ public class BillBan {
     private Double totalPrice;
     private BillStatus status;
     private PaymentMethod paymentMethod;
-    
-    @DocumentReference
+    @DBRef
+    @Reference
     private Customer customer;
-    
     private ArrayList<OrderDetail> orderDetails;
-    
-    @DocumentReference
+    @DBRef
+    @Reference
     private User staff;
     
     private Double additionalCharge = 0.0;
@@ -43,7 +43,9 @@ public class BillBan {
     @Data
     @NoArgsConstructor
     public static class OrderDetail {
-        @DocumentReference
+       
+        @DBRef
+        @Reference
         private Product product;
         private int quantity;
         private double unitPrice;
