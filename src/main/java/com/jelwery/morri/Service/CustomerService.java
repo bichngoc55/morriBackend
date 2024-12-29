@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jelwery.morri.Model.Customer;
-import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Repository.CustomerRepository;
 
 @Service
@@ -67,6 +66,16 @@ public class CustomerService {
         }
         else {
             throw new Exception("Customer with ID " + customerId + " not found");
+        }
+    }
+
+    public Customer getCustomerByPhone(String customerPhone) throws Exception {
+        Optional<Customer> customerOpt = customerRepository.findByPhoneNumber(customerPhone);
+        if (customerOpt.isPresent()) {
+            return customerOpt.get();
+        }
+        else {
+            throw new Exception("Customer with phone " + customerPhone + " not found");
         }
     }
 }
