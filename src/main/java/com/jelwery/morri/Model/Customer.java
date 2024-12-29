@@ -24,9 +24,9 @@ public class Customer {
     private Date dateOfBirth;
     private ROLE role = ROLE.CUSTOMER;
     private Date ngayDangKyThanhVien;
-    @Indexed(unique = true)
+    // @Indexed(unique = true)
     private String email;
-    @Indexed(unique = true)
+    // @Indexed(unique = true)
     private String password;
     // @DBRef
     // private ArrayList<BillBan> danhSachSanPhamDaMua;

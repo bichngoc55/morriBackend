@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection="phieuService")
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class PhieuService {
     private String id;
     @Indexed(unique = true)
     private String nameService;
-    private ArrayList<String> services;
+    private List<String> servicesId;
     private String description;
     private String staffLapHoaDonId;   
     private String staffLamDichVuId;  
@@ -31,13 +32,7 @@ public class PhieuService {
     private LocalDateTime createdAt;
     private Date deliveryDate;
     private DELIVERYSTATUS deliverystatus;
-     
-    @Transient
-    private User staffLapHoaDon;
-    @Transient
-    private User staffLamDichVu;
-    @Transient
-    private ArrayList<Service> service;
+      
     public enum DELIVERYSTATUS{
         COMPLETED,
         NOT_YET
