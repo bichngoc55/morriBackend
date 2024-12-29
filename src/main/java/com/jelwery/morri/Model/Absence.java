@@ -11,8 +11,17 @@ import lombok.Data;
 public class Absence {
     @Id
     private String id;
-     @CreatedDate
-        private LocalDateTime date;    
-        private String reason;
+    
+    @CreatedDate
+    private LocalDateTime date;
+    private String employeeId; 
+    private String reason;
+    private AbsenceStatus status; 
+    
+    public enum AbsenceStatus {
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
 
 }

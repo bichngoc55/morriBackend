@@ -9,6 +9,15 @@ public class AttendanceRecord {
     private LocalDateTime date;
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
-    private String status;
+    private AttendanceStatus status;
     private Double workingHours;
+    private String notes;
+    
+    public enum AttendanceStatus {
+        PRESENT,
+        ABSENT,
+        LATE,
+        LEAVE,
+        PENDING
+    }
  }

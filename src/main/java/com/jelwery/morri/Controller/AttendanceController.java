@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jelwery.morri.Model.Attendance; 
+import com.jelwery.morri.Model.Absence;
+import com.jelwery.morri.Model.Attendance;
+import com.jelwery.morri.Model.AttendanceRecord;
+import com.jelwery.morri.Repository.AttendanceRepository;
 import com.jelwery.morri.Service.AttendanceService; 
 
 @RestController
@@ -21,39 +25,31 @@ import com.jelwery.morri.Service.AttendanceService;
 public class AttendanceController {
      @Autowired
     private AttendanceService attendanceService;
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
-    @GetMapping
-    public ResponseEntity<List<Attendance>> getAllAttendances() {
-        return ResponseEntity.ok(attendanceService.getAllAttendances());
+    @PostMapping("/record")
+    public ResponseEntity<Attendance> recordAttendance(
+            @RequestParam String employeeId,
+            @RequestBody AttendanceRecord record) {
+        return ResponseEntity.ok(attendanceService.recordAttendance(employeeId, record));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Attendance> getAttendanceById(@PathVariable String id) {
-        return ResponseEntity.ok(attendanceService.getAttendanceById(id));
+    @PostMapping("/absence")
+    public ResponseEntity<Absence> reportAbsence(@RequestBody Absence absence) {
+        return ResponseEntity.ok(attendanceService.reportAbsence(absence));
     }
 
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<List<Attendance>> getAttendancesByEmployeeId(@PathVariable String employeeId) {
-        return ResponseEntity.ok(attendanceService.getAttendancesByEmployeeId(employeeId));
+    public ResponseEntity<List<Attendance>> getEmployeeAttendance(
+            @PathVariable String employeeId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        if (year != null && month != null) {
+            return ResponseEntity.ok(
+                attendanceRepository.findByEmployeeIdAndYearAndMonth(employeeId, year, month));
+        }
+        return ResponseEntity.ok(attendanceRepository.findByEmployeeId(employeeId));
     }
-
-    @PostMapping
-    public ResponseEntity<Attendance> createAttendance(@RequestBody Attendance attendance) {
-        return ResponseEntity.ok(attendanceService.createAttendance(attendance));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Attendance> updateAttendance(
-            @PathVariable String id,
-            @RequestBody Attendance attendance) {
-        return ResponseEntity.ok(attendanceService.updateAttendance(id, attendance));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAttendance(@PathVariable String id) {
-        attendanceService.deleteAttendance(id);
-        return ResponseEntity.ok().build();
-    }
-
 
 }
