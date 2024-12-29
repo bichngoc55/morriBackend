@@ -7,9 +7,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.SupplierDeserializer;
+import com.jelwery.morri.DTO.UserDeserializer;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.ArrayList; 
 
 @Document(collection="inventory")
 @Data
@@ -20,9 +23,11 @@ public class Inventory {
     private String name;
     // total quantity nha
     private int quantity;
-    // @DocumentReference
+    @DocumentReference
+    @JsonDeserialize(contentUsing = SupplierDeserializer.class)
     private Supplier supplierId;
-    // @DocumentReference
+    @DocumentReference
+    @JsonDeserialize(contentUsing = UserDeserializer.class)
     private User userId;
     @CreatedDate
     private LocalDateTime ngayNhapKho;

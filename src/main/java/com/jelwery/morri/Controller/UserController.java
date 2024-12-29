@@ -24,29 +24,29 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+    // @GetMapping
+    // public ResponseEntity<List<User>> getAllUsers() {
+    //     return ResponseEntity.ok(userService.getAllUsers());
+    // }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
+    // @GetMapping("/{id}")
+    // public ResponseEntity<User> getUserById(@PathVariable String id) {
+    //     return ResponseEntity.ok(userService.getUserById(id));
+    // }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
-    }
+    // @PostMapping
+    // public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    //     return ResponseEntity.ok(userService.createUser(user));
+    // }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(id, user));
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<User> updateUser(@PathVariable String id, @Valid @RequestBody User user) {
+    //     return ResponseEntity.ok(userService.updateUser(id, user));
+    // }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    //     userService.deleteUser(id);
+    //     return ResponseEntity.ok().build();
+    // }
 }
