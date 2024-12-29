@@ -20,22 +20,8 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     //create
-    public Customer createCustomer(Customer customer) throws Exception {
-        Optional<User> existingUser = customerRepository.findByEmail(customer.getEmail());
-        if (existingUser.isPresent()) {
-            throw new Exception("Email is already registered");
-        }
-        if (customer.getName().isEmpty()  ||
-                 customer.getEmail().isEmpty() ||
-                customer.getPassword().isEmpty()
-                ) {
-            throw new Exception("All fields ( name, email, password) are required");
-        }
-        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-
-        customerRepository.save(customer);
-        return customerRepository.save(customer);
-//        return customerRepository.save(customer);
+    public Customer createCustomer(Customer customer) throws Exception { 
+        return customerRepository.save(customer); 
     }
     public Customer updateCustomer(String customerId, Customer customer) throws Exception {
         Optional<Customer> existingCustomerOpt = customerRepository.findById(customerId);
