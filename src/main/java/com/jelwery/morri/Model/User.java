@@ -4,20 +4,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed; 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.time.LocalDate;
+import org.springframework.data.mongodb.core.mapping.Document; 
+ 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.ArrayList;  
 import java.util.List;
 
 @Document(collection="users")
@@ -38,36 +33,20 @@ public class User {
     private LocalDateTime dateOfBirth;
     private GENDER gender;
     private String phoneNumber;
-    private List<Absence> absences;
+    private List<String> absencesId;
     @Indexed(unique = true)
     private String cccd;
+    private String avaURL;
     private String address;
     @CreatedDate
     private LocalDateTime ngayVaoLam;
     private ROLE role;
-    private String luongCoBan;
-    @DocumentReference
-    private ArrayList<Salary> bangLuong;
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));  
-    }
+    private String luongCoBan; 
+    private ArrayList<String> bangLuongId; 
+    @Transient
+    private ArrayList<Absence> absences;
+    @Transient
+    private ArrayList<Salary> bangLuong; 
 
-public class Absence {
-     @CreatedDate
-        private LocalDateTime date;    
-        private String reason;
-    // Getters and Setters
-    public LocalDateTime getDate() {
-        return date;
-    }
- 
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-}
 
 }
