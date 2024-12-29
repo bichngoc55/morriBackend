@@ -32,8 +32,7 @@ public class User {
     private String name;
     private LocalDateTime dateOfBirth;
     private GENDER gender;
-    private String phoneNumber;
-    private List<String> absencesId;
+    private String phoneNumber; 
     @Indexed(unique = true)
     private String cccd;
     private String avaURL;
@@ -42,9 +41,7 @@ public class User {
     private LocalDateTime ngayVaoLam;
     private ROLE role;
     private String luongCoBan; 
-    private ArrayList<String> bangLuongId; 
-    @Transient
-    private ArrayList<Absence> absences;
+    private ArrayList<String> bangLuongId;  
     @Transient
     private ArrayList<Salary> bangLuong; 
 

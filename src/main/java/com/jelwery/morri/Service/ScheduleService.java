@@ -3,14 +3,12 @@ package com.jelwery.morri.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Service;
 
+import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.Schedule;
+import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Repository.ScheduleRepository;
 import com.jelwery.morri.Repository.UserRepository;
 
@@ -21,98 +19,60 @@ public class ScheduleService {
     
     @Autowired
     private UserRepository userRepository;
-    
-    @Autowired
-    private MongoTemplate mongoTemplate;
+
+    public Schedule createSchedule(Schedule schedule) {
+        validateScheduleUsers(schedule);
+        return scheduleRepository.save(schedule);
+    }
 
     public List<Schedule> getAllSchedules() {
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.lookup("users", "employeeId", "_id", "employee"),
-            Aggregation.unwind("employee", true)
-        );
-        
-        AggregationResults<Schedule> results = mongoTemplate.aggregate(
-            aggregation, "schedule", Schedule.class);
-            
-        return results.getMappedResults();
+        return scheduleRepository.findAll();
     }
 
     public Schedule getScheduleById(String id) {
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("_id").is(id)),
-            Aggregation.lookup("users", "employeeId", "_id", "employee"),
-            Aggregation.unwind("employee", true)
-        );
-        
-        AggregationResults<Schedule> results = mongoTemplate.aggregate(
-            aggregation, "schedule", Schedule.class);
-        
-        Schedule result = results.getUniqueMappedResult();
-        if (result == null) {
-            throw new RuntimeException("Schedule not found with id: " + id);
-        }
-        return result;
+        return scheduleRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with id: " + id));
     }
 
-    public List<Schedule> getSchedulesByEmployeeId(String employeeId) {
-        Aggregation aggregation = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("employeeId").is(employeeId)),
-            Aggregation.lookup("users", "employeeId", "_id", "employee"),
-            Aggregation.unwind("employee", true)
-        );
-        
-        AggregationResults<Schedule> results = mongoTemplate.aggregate(
-            aggregation, "schedule", Schedule.class);
-            
-        return results.getMappedResults();
-    }
-
-    public Schedule createSchedule(Schedule schedule) {
-        validateSchedule(schedule);
-        Schedule saved = mongoTemplate.save(schedule);
-        return getScheduleById(saved.getId());
+    public List<Schedule> getSchedulesByDateRange(LocalDateTime start, LocalDateTime end) {
+        return scheduleRepository.findByWorkDateBetween(start, end);
     }
 
     public Schedule updateSchedule(String id, Schedule schedule) {
-        if (!scheduleRepository.existsById(id)) {
-            throw new RuntimeException("Schedule not found with id: " + id);
+        Schedule existingSchedule = getScheduleById(id);
+        
+        if (schedule.getMorningShifts() != null) {
+            validateUsers(schedule.getMorningShifts());
+            existingSchedule.setMorningShifts(schedule.getMorningShifts());
         }
-        schedule.setId(id);
-        validateSchedule(schedule);
-        Schedule saved = mongoTemplate.save(schedule);
-        return getScheduleById(saved.getId());
+        
+        if (schedule.getAfternoonShifts() != null) {
+            validateUsers(schedule.getAfternoonShifts());
+            existingSchedule.setAfternoonShifts(schedule.getAfternoonShifts());
+        }
+        
+        if (schedule.getWorkDate() != null) {
+            existingSchedule.setWorkDate(schedule.getWorkDate());
+        }
+        
+        if (schedule.getStatus() != null) {
+            existingSchedule.setStatus(schedule.getStatus());
+        }
+
+        return scheduleRepository.save(existingSchedule);
     }
 
-    public void deleteSchedule(String id) {
-        if (!scheduleRepository.existsById(id)) {
-            throw new RuntimeException("Schedule not found with id: " + id);
-        }
-        scheduleRepository.deleteById(id);
+    private void validateScheduleUsers(Schedule schedule) {
+        validateUsers(schedule.getMorningShifts());
+        validateUsers(schedule.getAfternoonShifts());
     }
 
-    private void validateSchedule(Schedule schedule) {
-        if (schedule.getEmployeeId() == null || schedule.getEmployeeId().isEmpty()) {
-            throw new IllegalArgumentException("EmployeeId cannot be null or empty");
-        }
-
-        if (!userRepository.existsById(schedule.getEmployeeId())) {
-            throw new IllegalArgumentException("Invalid employee reference");
-        }
-
-        if (schedule.getWorkDate() == null) {
-            throw new IllegalArgumentException("Work date cannot be null");
-        }
-
-        // if (schedule.getStartTime() == null) {
-        //     throw new IllegalArgumentException("Start time cannot be null");
-        // }
-
-        // if (schedule.getEndTime() == null) {
-        //     throw new IllegalArgumentException("End time cannot be null");
-        // }
-
-        if (schedule.getStartTime().isAfter(schedule.getEndTime())) {
-            throw new IllegalArgumentException("Start time cannot be after end time");
+    private void validateUsers(List<User> users) {
+        if (users != null) {
+            for (User user : users) {
+                userRepository.findById(user.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + user.getId()));
+            }
         }
     }
 
