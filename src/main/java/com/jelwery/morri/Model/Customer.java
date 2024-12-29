@@ -28,10 +28,7 @@ public class Customer {
     private String email;
     @Indexed(unique = true)
     private String password;
-    // @DBRef
-    // private ArrayList<BillBan> danhSachSanPhamDaMua;
-    // @DBRef
-    // private ArrayList<BillMua> danhSachSanPhamDaBan;
+   
 
     private ArrayList<String> danhSachSanPhamDaMua; 
 
