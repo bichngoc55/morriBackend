@@ -15,21 +15,15 @@ import lombok.NoArgsConstructor;
 public class Customer {
     @Id
     private String id;
-
     private String name;
-
     private GENDER gioiTinh;
+    @Indexed(unique=true)
     private String phoneNumber;
-
     private Date dateOfBirth;
     private ROLE role = ROLE.CUSTOMER;
     private Date ngayDangKyThanhVien;
-    // @Indexed(unique = true)
     private String email;
-    // @Indexed(unique = true)
     private String password;
-   
-
     private ArrayList<String> danhSachSanPhamDaMua; 
 
     

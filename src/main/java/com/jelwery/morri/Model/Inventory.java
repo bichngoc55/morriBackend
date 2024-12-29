@@ -1,7 +1,8 @@
 package com.jelwery.morri.Model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id; 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,8 +12,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jelwery.morri.DTO.SupplierDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList; 
+import lombok.Data;
+import lombok.NoArgsConstructor; 
 
 @Document(collection="inventory")
 @Data
