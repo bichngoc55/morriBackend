@@ -21,6 +21,8 @@ public class CustomerService {
 
     //create
     public Customer createCustomer(Customer customer) throws Exception { 
+        if(customer.getPassword()!=null)
+            customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         return customerRepository.save(customer); 
     }
     public Customer updateCustomer(String customerId, Customer customer) throws Exception {

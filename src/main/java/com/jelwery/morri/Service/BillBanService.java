@@ -46,12 +46,9 @@ public class BillBanService {
 
         if (customer.getId() == null) {
             throw new IllegalArgumentException("Customer ID is null");
-        }
-            
-                // Thiết lập customer cho BillBan
+        } 
         billBan.setCustomer(customer);
-            
-                // Thêm BillBan vào danh sách các sản phẩm đã mua của khách hàng
+             
        
         
 

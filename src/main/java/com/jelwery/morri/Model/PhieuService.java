@@ -6,7 +6,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed; 
-import org.springframework.data.mongodb.core.mapping.Document; 
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.ServiceDeserializer;
+import com.jelwery.morri.DTO.UserDeserializer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,10 +27,16 @@ public class PhieuService {
     private String id;
     @Indexed(unique = true)
     private String nameService;
-    private List<String> servicesId;
+    @DocumentReference
+     @JsonDeserialize(contentUsing = ServiceDeserializer.class)
+    private List<Service> servicesId;
     private String description;
-    private String staffLapHoaDonId;   
-    private String staffLamDichVuId;  
+    @DocumentReference
+    @JsonDeserialize(contentUsing = UserDeserializer.class)
+    private User staffLapHoaDonId;   
+    @DocumentReference
+    @JsonDeserialize(contentUsing = UserDeserializer.class)
+    private User staffLamDichVuId;  
     private int quantity;
     private Double totalPrice;
     @CreatedDate

@@ -8,7 +8,7 @@ import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Model.User;
 
 public interface CustomerRepository extends MongoRepository<Customer, String> {
-    Optional<User> findByEmail(String email);
+    Optional<Customer> findByEmail(String email);
     Optional<Customer> findByPhoneNumber (String phoneNumber);
     
 }

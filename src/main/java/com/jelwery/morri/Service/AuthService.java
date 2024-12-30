@@ -1,7 +1,9 @@
 package com.jelwery.morri.Service;
 
 import com.jelwery.morri.DTO.LoginDTO;
+import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Model.User;
+import com.jelwery.morri.Repository.CustomerRepository;
 import com.jelwery.morri.Repository.UserRepository;
 import com.jelwery.morri.Utils.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import java.util.Optional;
 public class AuthService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Autowired
     private JWT jwtUtil;
@@ -49,15 +53,21 @@ public class AuthService {
 
     }
     public Map<String, Object> loginUser(LoginDTO loginDTO)  throws Exception {
-        Optional<User> existingUser = userRepository.findByEmail(loginDTO.getEmail() );
-        System.out.println(existingUser.isPresent());
+        Optional<User> existingUser = userRepository.findByEmail(loginDTO.getEmail() ); 
+        Optional<Customer> exOptionalCustomer = customerRepository.findByEmail(loginDTO.getEmail());
         if (existingUser.isPresent() && passwordEncoder.matches(loginDTO.getPassword(), existingUser.get().getPassword())) {
             String token = jwtUtil.generateToken(existingUser.get().getEmail(), existingUser.get().getRole());
             Map<String, Object> response = new HashMap<>();
             response.put("user", existingUser.get());
             response.put("accessToken", token);
             return response;
-        } else {
+        } else if(exOptionalCustomer.isPresent() && passwordEncoder.matches(loginDTO.getPassword(), exOptionalCustomer.get().getPassword())){
+            String token = jwtUtil.generateToken(exOptionalCustomer.get().getEmail(), exOptionalCustomer.get().getRole());
+            Map<String, Object> response = new HashMap<>();
+            response.put("user", exOptionalCustomer.get());
+            response.put("accessToken", token);
+            return response;
+        }else {
             throw new Exception("Invalid credentials");
         }
     }
