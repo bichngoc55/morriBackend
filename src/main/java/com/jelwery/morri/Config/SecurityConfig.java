@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/service/**", "/jewelry/**", "/billBan/**").permitAll()
                         .requestMatchers("/customer/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/supplier/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
+                        .requestMatchers("/supplier/**").permitAll()
                         .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
                         .requestMatchers("/sales/**").hasAnyRole("ADMIN", "SALE_STAFF")
                         .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**").permitAll()

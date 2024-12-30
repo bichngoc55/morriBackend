@@ -1,29 +1,22 @@
 package com.jelwery.morri.Service;
 
 
-import com.jelwery.morri.Exception.ResourceNotFoundException;
-import com.jelwery.morri.Model.Inventory;
-import com.jelwery.morri.Model.Supplier;
-import com.jelwery.morri.Model.User;
-import com.jelwery.morri.Repository.InventoryRepository;
-import com.jelwery.morri.Repository.SupplierRespository;
-import com.jelwery.morri.Repository.UserRepository;
-import com.jelwery.morri.Validation.InventoryValidation;
-
-import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import org.springframework.security.core.Authentication;
+import com.jelwery.morri.Exception.ResourceNotFoundException;
+import com.jelwery.morri.Model.Inventory;
+import com.jelwery.morri.Model.Product;
+import com.jelwery.morri.Repository.InventoryRepository;
+import com.jelwery.morri.Repository.ProductRepository;
+import com.jelwery.morri.Validation.InventoryValidation;
 
 @Service
 @RestController
@@ -31,6 +24,10 @@ import org.springframework.security.core.Authentication;
 public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepository;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductRepository productRepository;
     // @Autowired
     // private SupplierRespository supplierRespository;
     // @Autowired
@@ -52,11 +49,19 @@ public class InventoryService {
     //     ));
     // }
     public Inventory createInventory(Inventory inventoryDTO) {
-        // inventoryValidation.validateInventoryDTO(inventoryDTO);
-        
-        // Inventory inventory = new Inventory();
-        // mapDTOToInventory(inventoryDTO, inventory);
+         ArrayList<Product> updatedProducts = new ArrayList<>();
+        for (Product product : inventoryDTO.getInventoryProducts()) {
+            Optional<Product> existingProduct = productRepository.findByName(product.getName());
+            if (existingProduct.isPresent()) {
+                productService.increaseQuantity(existingProduct.get().getId(), product.getQuantity());
+                updatedProducts.add(existingProduct.get());
+            } else {
+                Product createdProduct = productService.createProduct(product);
+                updatedProducts.add(createdProduct);
+            }
+        }
         inventoryDTO.setNgayNhapKho(LocalDateTime.now());
+        inventoryDTO.setInventoryProducts(updatedProducts);
         return inventoryRepository.save(inventoryDTO);
     }
 
@@ -73,13 +78,6 @@ public class InventoryService {
         Inventory existingInventory = getInventoryById(id);
         
         inventoryValidation.validateInventoryDTO(inventoryDTO);
-        
-        if (inventoryDTO.getName() != null) {
-            existingInventory.setName(inventoryDTO.getName());
-        }
-        if (inventoryDTO.getQuantity() > 0) {
-            existingInventory.setQuantity(inventoryDTO.getQuantity());
-        }
         // if (inventoryDTO.getSupplierId() != null) {
         //     Supplier supplier = supplierRespository.findById(inventoryDTO.getSupplierId())
         //          .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + inventoryDTO.getSupplierId()));

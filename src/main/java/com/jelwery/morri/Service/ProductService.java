@@ -1,19 +1,19 @@
 package com.jelwery.morri.Service;
 
- import com.jelwery.morri.Exception.DuplicateResourceException;
- import com.jelwery.morri.Exception.ResourceNotFoundException;
-import com.jelwery.morri.Model.Product;
-import com.jelwery.morri.Model.Supplier; 
-import com.jelwery.morri.Repository.ProductRepository;
-import com.jelwery.morri.Repository.SupplierRespository;
-import com.jelwery.morri.Validation.ProductValidation;
+ import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List; 
+import com.jelwery.morri.Exception.DuplicateResourceException; 
+import com.jelwery.morri.Exception.ResourceNotFoundException;
+import com.jelwery.morri.Model.Product;
+import com.jelwery.morri.Model.Supplier;
+import com.jelwery.morri.Repository.ProductRepository;
+import com.jelwery.morri.Repository.SupplierRespository;
+import com.jelwery.morri.Validation.ProductValidation; 
 
 @Service
 @RestController
@@ -43,6 +43,13 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     } 
+
+    public Product increaseQuantity(String productId, int newQuantity) { 
+        Product existingProduct = productRepository.findById(productId)
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+        existingProduct.setQuantity(existingProduct.getQuantity() + newQuantity);
+        return productRepository.save(existingProduct);
+     }
     public Product updateProduct(String productId, Product updatedProduct) {  
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
