@@ -1,29 +1,30 @@
 package com.jelwery.morri.Model;
-
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
-@Document(collection = "absence")
+import lombok.NoArgsConstructor;
 
+@Document(collection = "attendanceRecord")
 @Data
-public class Absence {
+@NoArgsConstructor
+public class AttendanceRecord {
     @Id
     private String id;
-    
-    @CreatedDate
     private LocalDateTime date;
-    private String employeeId; 
-    private String reason;
-    private AbsenceStatus status; 
+    private LocalDateTime checkIn;
+    private LocalDateTime checkOut;
+    private AttendanceStatus status;
+    private Double workingHours;
+    private String notes;
     
-    public enum AbsenceStatus {
-        PENDING,
-        APPROVED,
-        REJECTED
+    public enum AttendanceStatus {
+        PRESENT,
+        ABSENT,
+        LATE,
+        LEAVE,
+        PENDING
     }
-
-}
+ }
