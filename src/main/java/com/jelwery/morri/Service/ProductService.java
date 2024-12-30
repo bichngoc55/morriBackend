@@ -44,6 +44,10 @@ public class ProductService {
         return productRepository.findAll();
     } 
 
+    public Product getProductById(String id) {
+        return productRepository.findById(id)
+               .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+    }
     public Product increaseQuantity(String productId, int newQuantity) { 
         Product existingProduct = productRepository.findById(productId)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
