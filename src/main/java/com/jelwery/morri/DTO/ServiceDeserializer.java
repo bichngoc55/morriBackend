@@ -1,6 +1,7 @@
 package com.jelwery.morri.DTO;
 
-import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -10,6 +11,7 @@ import com.jelwery.morri.Repository.ServiceRepository;
 import com.fasterxml.jackson.core.JsonParser; 
 
 import java.io.IOException;
+@Component
 public class ServiceDeserializer extends JsonDeserializer<Service>{
     @Autowired
    private ServiceRepository serviceRepository;

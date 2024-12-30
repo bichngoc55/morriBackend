@@ -131,43 +131,49 @@ public class AttendanceService {
     //     updateAttendanceTotals(existing);
     // }
     public void updateAttendanceRecord(Attendance existing, Attendance newRecord) {
+        if (existing.getAttendanceRecords() == null) {
+            existing.setAttendanceRecords(new ArrayList<>());
+        }
+        
         if (newRecord.getAttendanceRecords() != null && !newRecord.getAttendanceRecords().isEmpty()) {
-            List<AttendanceRecord> validatedRecords = new ArrayList<>(); 
+            List<AttendanceRecord> validatedRecords = new ArrayList<>();
+            
             for (AttendanceRecord recordRef : newRecord.getAttendanceRecords()) {
                 AttendanceRecord fullRecord = attendanceRecordRepository
                     .findById(recordRef.getId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                         "AttendanceRecord not found with ID: " + recordRef.getId()));
-                 
+                        
                 boolean exists = existing.getAttendanceRecords().stream()
                     .anyMatch(existingRecord -> existingRecord.getId().equals(fullRecord.getId()));
-                 
+                        
                 if (!exists) {
                     validatedRecords.add(fullRecord);
                 }
-            } 
-            if (existing.getAttendanceRecords() == null) {
-                existing.setAttendanceRecords(new ArrayList<>());
             }
-     
+            
             existing.getAttendanceRecords().addAll(validatedRecords);
         }
     
         if (newRecord.getAbsences() != null && !newRecord.getAbsences().isEmpty()) {
-            List<Absence> validatedAbsences = new ArrayList<>(); 
+            List<Absence> validatedAbsences = new ArrayList<>();
+            
             for (Absence absenceRef : newRecord.getAbsences()) {
                 Absence fullAbsence = absenceRepository
                     .findById(absenceRef.getId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                         "Absence not found with ID: " + absenceRef.getId()));
-                validatedAbsences.add(fullAbsence);
-            } 
-            if (existing.getAbsences() == null) {
-                existing.setAbsences(new ArrayList<>());
+                
+                boolean exists = existing.getAbsences().stream()
+                    .anyMatch(existingAbsence -> existingAbsence.getId().equals(fullAbsence.getId()));
+                    
+                if (!exists) {
+                    validatedAbsences.add(fullAbsence);
+                }
             }
-     
+            
             existing.getAbsences().addAll(validatedAbsences);
-        } 
+        }
         updateAttendanceTotals(existing);
     }
     

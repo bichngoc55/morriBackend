@@ -22,67 +22,60 @@ import com.jelwery.morri.Service.PhieuDichVuService;
 @RestController
 @RequestMapping("/phieuDichVu") 
 public class PhieuServiceController {
-     @Autowired
-    private PhieuDichVuService phieuDichVuService;
+    @Autowired
+    private PhieuDichVuService  phieuServiceService;
 
     @GetMapping
-    public ResponseEntity<List<PhieuService>> getAllPhieuServices() {
-        List<PhieuService> phieuServices = phieuDichVuService.getAllPhieuServices();
-        return new ResponseEntity<>(phieuServices, HttpStatus.OK);
+    public List<PhieuService> getAllPhieuServices() {
+        return phieuServiceService.getAllPhieuServices();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PhieuService> getPhieuServiceById(@PathVariable String id) {
-        try {
-            PhieuService phieuService = phieuDichVuService.getPhieuServiceById(id);
-            return new ResponseEntity<>(phieuService, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        PhieuService phieuService = phieuServiceService.getPhieuServiceById(id);
+        return ResponseEntity.ok(phieuService);
+    }
+
+    @GetMapping("/name/{nameService}")
+    public ResponseEntity<PhieuService> getPhieuServiceByName(@PathVariable String nameService) {
+        PhieuService phieuService = phieuServiceService.getPhieuServiceByName(nameService);
+        return ResponseEntity.ok(phieuService);
     }
 
     @PostMapping
     public ResponseEntity<PhieuService> createPhieuService(@RequestBody PhieuService phieuService) {
-        try {
-            PhieuService createdPhieuService = phieuDichVuService.createPhieuService(phieuService);
-            return new ResponseEntity<>(createdPhieuService, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        PhieuService createdPhieuService = phieuServiceService.createPhieuService(phieuService);
+        return ResponseEntity.ok(createdPhieuService);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PhieuService> updatePhieuService(
             @PathVariable String id,
-            @RequestBody PhieuService phieuService) {
-        try {
-            PhieuService updatedPhieuService = phieuDichVuService.updatePhieuService(id, phieuService);
-            return new ResponseEntity<>(updatedPhieuService, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+            @RequestBody PhieuService phieuServiceDetails) {
+        PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDetails);
+        return ResponseEntity.ok(updatedPhieuService);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePhieuService(@PathVariable String id) {
-        try {
-            phieuDichVuService.deletePhieuService(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> deletePhieuService(@PathVariable String id) {
+        phieuServiceService.deletePhieuService(id);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/delivery-status")
-    public ResponseEntity<PhieuService> updateDeliveryStatus(
-            @PathVariable String id,
-            @RequestParam PhieuService.DELIVERYSTATUS status) {
-        try {
-            PhieuService updatedPhieuService = phieuDichVuService.updateDeliveryStatus(id, status);
-            return new ResponseEntity<>(updatedPhieuService, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    // @GetMapping("/staff-lap-hoa-don/{staffId}")
+    // public List<PhieuService> getPhieuServicesByStaffLapHoaDon(@PathVariable String staffId) {
+    //     return phieuServiceService.getPhieuServicesByStaffLapHoaDon(staffId);
+    // }
+
+    // @GetMapping("/staff-lam-dich-vu/{staffId}")
+    // public List<PhieuService> getPhieuServicesByStaffLamDichVu(@PathVariable String staffId) {
+    //     return phieuServiceService.getPhieuServicesByStaffLamDichVu(staffId);
+    // }
+
+    @GetMapping("/status/{status}")
+    public List<PhieuService> getPhieuServicesByStatus(
+            @PathVariable PhieuService.DELIVERYSTATUS status) {
+        return phieuServiceService.getPhieuServicesByStatus(status);
     }
 
 }

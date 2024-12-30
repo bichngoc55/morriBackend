@@ -36,12 +36,16 @@ public class SalaryService {
     // }
 
     public Salary createSalary(Salary salary) { 
+        System.out.println("Employee ID: " + salary.getEmployeeId());
+    System.out.println("Year: " + salary.getSalaryReceiveDate().getYear());
+    System.out.println("Month: " + salary.getSalaryReceiveDate().getMonthValue());
+
         Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
             salary.getEmployeeId(),
             salary.getSalaryReceiveDate().getYear(),
             salary.getSalaryReceiveDate().getMonthValue()
-        ).orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
-            salary.setCreatedAt(LocalDateTime.now());
+        ).orElseThrow(() -> new ResourceNotFoundException("Attendance record not found")); 
+        salary.setCreatedAt(LocalDateTime.now());
 
         calculateSalary(salary, attendance);
         return salaryRepository.save(salary);

@@ -11,6 +11,7 @@ import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.AttendanceRecord;
 import com.fasterxml.jackson.core.JsonParser; 
 
+@Component
 public class AttendanceRecordDeserializer  extends JsonDeserializer<AttendanceRecord> {
     @Autowired
    private AttendanceRecordRepository attendanceRecordRepository;

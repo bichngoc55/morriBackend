@@ -25,76 +25,82 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 
-@Service
-@RestController
-@RequestMapping("/inventory")
+@Service 
 public class InventoryService {
+    // @Autowired
+    // private InventoryRepository inventoryRepository;
+ 
+    // public List<Inventory> getAllInventories() {
+    //     return inventoryRepository.findAll();
+    // }
+ 
+    // public Inventory getInventoryById(String id) {
+    //     return inventoryRepository.findById(id).orElseThrow(() -> 
+    //         new RuntimeException("Inventory not found with ID: " + id));
+    // }
+ 
+    // public Inventory addInventory(Inventory inventory) {
+    //     return inventoryRepository.save(inventory);
+    // }
+ 
+    // public Inventory updateInventory(String id, Inventory inventoryDetails) {
+    //     Inventory existingInventory = getInventoryById(id);
+    //     existingInventory.setName(inventoryDetails.getName());
+    //     existingInventory.setQuantity(inventoryDetails.getQuantity());
+    //     existingInventory.setSupplierId(inventoryDetails.getSupplierId());
+    //     existingInventory.setUserId(inventoryDetails.getUserId());
+    //     existingInventory.setTotalPrice(inventoryDetails.getTotalPrice());
+    //     existingInventory.setInventoryProducts(inventoryDetails.getInventoryProducts());
+    //     return inventoryRepository.save(existingInventory);
+    // }
+ 
+    // public void deleteInventory(String id) {
+    //     inventoryRepository.deleteById(id);
+    // }
     @Autowired
     private InventoryRepository inventoryRepository;
-    // @Autowired
-    // private SupplierRespository supplierRespository;
-    // @Autowired
-    // private UserRepository userRepository;
     
-    @Autowired
-    private InventoryValidation inventoryValidation;
-
-    // @GetMapping("/")
-    // public ResponseEntity<?> accessSalesGateway(HttpServletRequest request) { 
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     System.out.println(authentication);
-    //     String userEmail = authentication.getName();
-        
-    //     // Your sales gateway logic here
-    //     return ResponseEntity.ok(Map.of(
-    //         "message", "Successfully accessed sales gateway",
-    //         "userEmail", userEmail
-    //     ));
-    // }
-    public Inventory createInventory(Inventory inventoryDTO) {
-        // inventoryValidation.validateInventoryDTO(inventoryDTO);
-        
-        // Inventory inventory = new Inventory();
-        // mapDTOToInventory(inventoryDTO, inventory);
-        inventoryDTO.setNgayNhapKho(LocalDateTime.now());
-        return inventoryRepository.save(inventoryDTO);
-    }
-
     public List<Inventory> getAllInventories() {
         return inventoryRepository.findAll();
     }
 
     public Inventory getInventoryById(String id) {
         return inventoryRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Inventory not found with id: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Inventory not found with ID: " + id));
     }
 
-    public Inventory updateInventory(String id, Inventory inventoryDTO) {
+    public Inventory addInventory(Inventory inventory) {
+        System.out.println("Inventory : " + inventory);
+        inventory.setNgayNhapKho(LocalDateTime.now());
+        
+        // Calculate quantity from products if not set
+        if (inventory.getQuantity() == 0 && inventory.getInventoryProducts() != null) {
+            inventory.setQuantity(inventory.getInventoryProducts().size());
+        }
+        
+        return inventoryRepository.save(inventory);
+    }
+
+    public Inventory updateInventory(String id, Inventory inventoryDetails) {
         Inventory existingInventory = getInventoryById(id);
         
-        inventoryValidation.validateInventoryDTO(inventoryDTO);
-        
-        if (inventoryDTO.getName() != null) {
-            existingInventory.setName(inventoryDTO.getName());
+        if (inventoryDetails.getName() != null) {
+            existingInventory.setName(inventoryDetails.getName());
         }
-        if (inventoryDTO.getQuantity() > 0) {
-            existingInventory.setQuantity(inventoryDTO.getQuantity());
+        if (inventoryDetails.getQuantity() > 0) {
+            existingInventory.setQuantity(inventoryDetails.getQuantity());
         }
-        // if (inventoryDTO.getSupplierId() != null) {
-        //     Supplier supplier = supplierRespository.findById(inventoryDTO.getSupplierId())
-        //          .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + inventoryDTO.getSupplierId()));
-        //     existingInventory.setSupplierId(supplier);
-        // }
-        // if (inventoryDTO.getUserId() != null) {
-        //     User user = userRepository.findById(inventoryDTO.getUserId())
-        //         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        //     existingInventory.setUserId(user);
-        // }
-        if (inventoryDTO.getTotalPrice() != null) {
-            existingInventory.setTotalPrice(inventoryDTO.getTotalPrice());
+        if (inventoryDetails.getSupplier() != null) {
+            existingInventory.setSupplier(inventoryDetails.getSupplier());
         }
-        if (inventoryDTO.getInventoryProducts() != null) {
-            existingInventory.setInventoryProducts(inventoryDTO.getInventoryProducts());
+        if (inventoryDetails.getUser() != null) {
+            existingInventory.setUser(inventoryDetails.getUser());
+        }
+        if (inventoryDetails.getTotalPrice() != null) {
+            existingInventory.setTotalPrice(inventoryDetails.getTotalPrice());
+        }
+        if (inventoryDetails.getInventoryProducts() != null) {
+            existingInventory.setInventoryProducts(inventoryDetails.getInventoryProducts());
         }
         
         return inventoryRepository.save(existingInventory);
@@ -102,10 +108,8 @@ public class InventoryService {
 
     public void deleteInventory(String id) {
         if (!inventoryRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Inventory not found with id: " + id);
+            throw new ResourceNotFoundException("Inventory not found with ID: " + id);
         }
         inventoryRepository.deleteById(id);
     }
-
-  
 }
