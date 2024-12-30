@@ -1,7 +1,4 @@
 package com.jelwery.morri.Model;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties; 
+
+import lombok.Data;
+import lombok.NoArgsConstructor; 
  
 @JsonAutoDetect
  @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,6 +25,8 @@ public class Product {
     private String id;
     @Indexed(unique=true)
     private String name;
+    @Indexed(unique=true)
+    private String code;
     private String description;
     private String material;
     private Double costPrice; 

@@ -28,8 +28,8 @@ public class ProductService {
 
     public Product createProduct(Product product) {
         productValidator.validateProduct(product);
-        if (productRepository.findByName(product.getName()).isPresent()) {
-            throw new DuplicateResourceException("Product with name " + product.getName() + " already exists");
+        if (productRepository.findByCode(product.getCode()).isPresent()) {
+            throw new DuplicateResourceException("Product with code " + product.getCode() + " already exists");
         }
     
         Supplier supplier = supplierRespository.findById(product.getSupplierId().getId())
