@@ -1,4 +1,5 @@
 package com.jelwery.morri.Model;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,12 +15,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties; 
+// import com.jelwery.morri.DTO.TypeDeserializer; 
  
 @JsonAutoDetect
  @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(collection="product")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class Product {
     @Id
     private String id;
@@ -30,6 +34,7 @@ public class Product {
     private Double costPrice; 
     private Double sellingPrice;
     private List<String> imageUrl;
+    // @JsonDeserialize(using = TypeDeserializer.class)
     private TYPE loaiSanPham;
     private int quantity;
     private double weight;
@@ -41,4 +46,6 @@ public class Product {
     @CreatedDate
     private LocalDateTime entryDate;
     // li do tui k code inventoryId o day vi 2 th tro den nhau
+ 
+
 }

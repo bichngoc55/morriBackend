@@ -87,19 +87,16 @@ public class AttendanceController {
     public ResponseEntity<Attendance> updateAttendance(
             @PathVariable String attendanceId,
             @RequestBody Attendance record) {
-        try { 
-            Attendance existingAttendance = attendanceRepository.findById(attendanceId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with ID: " + attendanceId));
- 
-            existingAttendance.setAttendanceRecords(record.getAttendanceRecords());
-            existingAttendance.setAbsences(record.getAbsences());
- 
-            attendanceService.updateAttendanceRecord(existingAttendance, record); 
-            Attendance updatedAttendance = attendanceRepository.save(existingAttendance);
-            return ResponseEntity.ok(updatedAttendance);
-
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+                try {
+                    Attendance existingAttendance = attendanceRepository.findById(attendanceId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found with ID: " + attendanceId));
+                     
+                    attendanceService.updateAttendanceRecord(existingAttendance, record);
+                    
+                    Attendance updatedAttendance = attendanceRepository.save(existingAttendance);
+                    return ResponseEntity.ok(updatedAttendance);
+                } catch (ResourceNotFoundException e) {
+                    return ResponseEntity.notFound().build();
+                }
     }
 }
