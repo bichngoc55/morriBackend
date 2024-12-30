@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,33 +23,35 @@ import com.jelwery.morri.Service.InventoryService;
 @RestController
 public class InventoryController {
     @Autowired
-    private InventoryService inventoryService;
-    @PostMapping("/add")
-    public ResponseEntity<Inventory> createInventory(@Valid @RequestBody Inventory inventoryDTO) {
-        return ResponseEntity.ok(inventoryService.createInventory(inventoryDTO));
-    }
-
+    private InventoryService inventoryService; 
+ 
     @GetMapping
     public ResponseEntity<List<Inventory>> getAllInventories() {
-        return ResponseEntity.ok(inventoryService.getAllInventories());
+        List<Inventory> inventories = inventoryService.getAllInventories();
+        return ResponseEntity.ok(inventories);
     }
-
+ 
     @GetMapping("/{id}")
     public ResponseEntity<Inventory> getInventoryById(@PathVariable String id) {
-        return ResponseEntity.ok(inventoryService.getInventoryById(id));
+        Inventory inventory = inventoryService.getInventoryById(id);
+        return ResponseEntity.ok(inventory);
     }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Inventory> updateInventory(
-            @PathVariable String id,
-            @Valid @RequestBody Inventory inventoryDTO) {
-        return ResponseEntity.ok(inventoryService.updateInventory(id, inventoryDTO));
+ 
+    @PostMapping("/create")
+    public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory) {
+        Inventory newInventory = inventoryService.addInventory(inventory);
+        return ResponseEntity.ok(newInventory);
     }
-
+ 
+    @PutMapping("/{id}")
+    public ResponseEntity<Inventory> updateInventory(@PathVariable String id, @RequestBody Inventory inventoryDetails) {
+        Inventory updatedInventory = inventoryService.updateInventory(id, inventoryDetails);
+        return ResponseEntity.ok(updatedInventory);
+    }
+ 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInventory(@PathVariable String id) {
         inventoryService.deleteInventory(id);
         return ResponseEntity.noContent().build();
     }
-
 }
