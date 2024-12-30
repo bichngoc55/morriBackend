@@ -1,12 +1,10 @@
 package com.jelwery.morri.Model;
 
-import java.lang.ref.Reference;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 

@@ -1,11 +1,10 @@
 package com.jelwery.morri.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
-import org.springframework.beans.propertyeditors.CharArrayPropertyEditor;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,22 +35,24 @@ public class BillBanService {
    
     public BillBan createBillBan(BillBan billBan) {
 
-        User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
-    
-        billBan.setStaff(staff);
+        if (billBan.getStaff() != null) {
+            User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
+            billBan.setStaff(staff);
+        }
+        else billBan.setStaff(null);
 
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
 
         if (customer.getId() == null) {
             throw new IllegalArgumentException("Customer ID is null");
-        } 
+        }
+            
         billBan.setCustomer(customer);
-             
+        billBan.setCreateAt(LocalDateTime.now());
+        billBan.setNote(billBan.getNote());
        
-        
-
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
         Product product = productRepository.findById(orderDetail.getProduct().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
@@ -82,8 +83,6 @@ public class BillBanService {
             product.setQuantity(product.getQuantity() - orderDetail.getQuantity());
             productRepository.save(product);
         }
-    
-        
 
         return savedBillBan;
     }

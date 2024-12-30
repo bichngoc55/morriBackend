@@ -32,7 +32,8 @@ public class BillBan {
     private Double additionalCharge = 0.0;
     
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDateTime createAt;
+    private String note;
 
     public enum BillStatus {
         ON_DELIVERY,
