@@ -32,7 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/supplier/**").permitAll()
                         .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
                         .requestMatchers("/sales/**").hasAnyRole("ADMIN", "SALE_STAFF")
-                        .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**").permitAll()
+                        .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**",
+                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**").permitAll()
 
                         .anyRequest().authenticated()
                 ) 

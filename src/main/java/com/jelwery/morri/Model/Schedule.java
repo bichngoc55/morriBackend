@@ -17,21 +17,7 @@ import lombok.NoArgsConstructor;
 @Document(collection="schedule")
 @Data
 @NoArgsConstructor
-public class Schedule {
-    // @Id
-    //  private String id; 
-    // private LocalDateTime workDate;
-
-    // @DocumentReference
-    // private List<Reference> morningShifts;
-
-    // @DocumentReference
-    // private List<Reference> afternoonShifts;
-
-    // private LocalTime startTime =LocalTime.of(7, 0);
-    // private LocalTime endTime=LocalTime.of(17, 0); 
-    //  @Transient
-    // private User employee;
+public class Schedule { 
     @Id
     private String id;
     
