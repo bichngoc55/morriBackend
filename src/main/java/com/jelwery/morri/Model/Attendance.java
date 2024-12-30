@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jelwery.morri.DTO.AbsenceDeserializer;
+import com.jelwery.morri.DTO.AttendanceRecordDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
 import lombok.Data;
@@ -26,7 +27,7 @@ public class Attendance {
     private int year;
     private int month;
     @DocumentReference
-    // @JsonDeserialize(contentUsing = AttendanceRecordDeserializer.class)
+    @JsonDeserialize(contentUsing = AttendanceRecordDeserializer.class)
     private List<AttendanceRecord> attendanceRecords;
     private Integer workingDays;
     @DocumentReference

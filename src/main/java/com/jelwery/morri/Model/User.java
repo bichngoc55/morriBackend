@@ -9,8 +9,12 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.data.mongodb.core.mapping.Document; 
- 
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.BonusPenaltyRecordDeserializer;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;  
 import java.util.List;
@@ -40,10 +44,7 @@ public class User {
     @CreatedDate
     private LocalDateTime ngayVaoLam;
     private ROLE role;
-    private String luongCoBan; 
-    private ArrayList<String> bangLuongId;  
-    @Transient
-    private ArrayList<Salary> bangLuong; 
+    private String luongCoBan;   
 
 
 }
