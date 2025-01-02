@@ -8,19 +8,30 @@ import org.springframework.stereotype.Service;
 
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.Absence;
-import com.jelwery.morri.Repository.AbsenceRepository; 
+import com.jelwery.morri.Model.User;
+import com.jelwery.morri.Repository.AbsenceRepository;
+import com.jelwery.morri.Repository.UserRepository; 
 
 @Service
 public class AbsenceService {
  @Autowired
     private AbsenceRepository absenceRepository;
+    @Autowired
+    private UserRepository userRepository;
  
     public Absence createAbsence(Absence absence) {
+        System.out.println(absence);
+        // User user = userRepository.findById(absence.getEmployeeId().toString())
+        // .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // absence.setEmployeeId(user);
         absence.setDate(LocalDateTime.now());  
         return absenceRepository.save(absence);
     }
  
     public List<Absence> getAllAbsences() {
+        //  User user = userRepository.findById(absence.getEmployeeId().toString())
+        // .orElseThrow(() -> new RuntimeException("User not found"));
         return absenceRepository.findAll();
     }
  
