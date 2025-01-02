@@ -1,9 +1,12 @@
 package com.jelwery.morri.Controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.InventoryReport;
 import com.jelwery.morri.Model.Inventory;
 import com.jelwery.morri.Service.InventoryService;
 
@@ -21,6 +25,7 @@ import com.jelwery.morri.Service.InventoryService;
 public class InventoryController {
     @Autowired
     private InventoryService inventoryService; 
+ 
  
     @GetMapping
     public ResponseEntity<List<Inventory>> getAllInventories() {
@@ -39,6 +44,27 @@ public class InventoryController {
         Inventory newInventory = inventoryService.addInventory(inventory);
         return ResponseEntity.ok(newInventory);
     }
+
+    @CrossOrigin
+    @PostMapping("/getInventoryByDay")
+    public ResponseEntity<List<InventoryReport>> getInventoryByDay(@RequestBody String date) {
+        try {
+            // Loại bỏ dấu " nếu có trong chuỗi
+            String cleanedDate = date.replace("\"", "").trim();
+            
+            // Dùng định dạng rõ ràng hơn
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime dateTime = LocalDateTime.parse(cleanedDate, formatter);
+            
+            List<InventoryReport> result = inventoryService.getInventoryByDay(dateTime);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            // Log lỗi để biết thêm thông tin khi gặp sự cố
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
  
     @PutMapping("/{id}")
     public ResponseEntity<Inventory> updateInventory(@PathVariable String id, @RequestBody Inventory inventoryDetails) {

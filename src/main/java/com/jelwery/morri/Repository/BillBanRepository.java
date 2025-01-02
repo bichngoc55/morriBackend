@@ -15,6 +15,7 @@ public interface BillBanRepository extends MongoRepository<BillBan, String> {
     List<BillBan> findByCustomerName(String name);
     List<BillBan> findByCustomerPhoneNumber(String phoneNumber);
     List<BillBan> findByCreateAtBetween(LocalDateTime start, LocalDateTime end);
+    List<BillBan> findByCreateAt(LocalDateTime createAt);
 
 
 }
