@@ -89,8 +89,8 @@ public class AuthService {
         }
         User user = userOptional.get();
         String token = jwtUtil.generateToken(user.getEmail(),user.getRole() );
-
-        String resetLink = "http://..." + token;
+//        http://localhost:3000/unauthorized
+        String resetLink = "http://localhost:3000/" + token;
         // Send the email
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
