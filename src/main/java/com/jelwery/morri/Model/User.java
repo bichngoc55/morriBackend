@@ -1,5 +1,6 @@
 package com.jelwery.morri.Model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,19 +10,14 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Document; 
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jelwery.morri.DTO.BonusPenaltyRecordDeserializer;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;  
-import java.util.List;
+import java.time.LocalDateTime; 
 
 @Document(collection="users")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     private String id;
@@ -37,8 +33,7 @@ public class User {
     private LocalDateTime dateOfBirth;
     private String faceId;
     private GENDER gender;
-    private String phoneNumber; 
-//    @Indexed(unique = true)
+    private String phoneNumber;  
     private String cccd;
     private String avaURL;
     private String address;
