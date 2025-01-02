@@ -35,6 +35,7 @@ public class User {
     private String password;
     private String name;
     private LocalDateTime dateOfBirth;
+    private String faceId;
     private GENDER gender;
     private String phoneNumber; 
     @Indexed(unique = true)

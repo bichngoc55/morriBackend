@@ -19,9 +19,17 @@ public class AttendanceRecord {
     private AttendanceStatus status;
     private Double workingHours;
     private String notes;
+    private CHECKTYPE checkType;
+
+    public enum CHECKTYPE {
+        IN,
+        OUT
+    }
+    
     
     public enum AttendanceStatus {
         PRESENT,
+        EARLY,
         ABSENT,
         LATE,
         LEAVE,
