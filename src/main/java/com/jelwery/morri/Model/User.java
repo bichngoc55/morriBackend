@@ -28,7 +28,7 @@ public class User {
     @NotNull
     private String username;
     @Indexed(unique = true)
-    @NotNull(message = "Salary field is required")
+    @NotNull(message = "email field is required")
     private String email;
     @Size(min = 6, message = "Password must be at least 6 characters long")
     @NotNull(message = "Password cant be null")
@@ -38,7 +38,7 @@ public class User {
     private String faceId;
     private GENDER gender;
     private String phoneNumber; 
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     private String cccd;
     private String avaURL;
     private String address;

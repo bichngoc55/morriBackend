@@ -17,7 +17,7 @@ public class Customer {
     private String id;
     private String name;
     private GENDER gioiTinh;
-    @Indexed(unique=true)
+//    @Indexed(unique=true)
     private String phoneNumber;
     private Date dateOfBirth;
     private ROLE role = ROLE.CUSTOMER;
