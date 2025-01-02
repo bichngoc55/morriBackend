@@ -1,23 +1,17 @@
 package com.jelwery.morri.Model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.index.Indexed; 
+import java.time.LocalDateTime;
+ 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jelwery.morri.DTO.BonusPenaltyRecordDeserializer;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;  
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection="users")
 @Data

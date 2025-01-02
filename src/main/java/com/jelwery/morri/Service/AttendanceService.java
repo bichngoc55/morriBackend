@@ -52,7 +52,7 @@ public class AttendanceService {
         }
  
         LocalTime checkInTime = record.getCheckIn().toLocalTime();
-        LocalTime checkOutTime = record.getCheckOut().toLocalTime();
+        // LocalTime checkOutTime = record.getCheckOut().toLocalTime();
          
         LocalTime lateThreshold = schedule.getStartTime().plusMinutes(15);
 
