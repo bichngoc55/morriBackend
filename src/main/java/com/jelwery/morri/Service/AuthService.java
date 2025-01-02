@@ -42,9 +42,8 @@ public class AuthService {
         if (user.getUsername() == null || user.getUsername().isEmpty() ||
                 user.getName() == null || user.getName().isEmpty() ||
                 user.getEmail() == null || user.getEmail().isEmpty() ||
-                user.getPassword() == null || user.getPassword().isEmpty() ||
-                user.getGender() == null) {
-            throw new Exception("All fields (username, name, email, password, gender) are required");
+                user.getPassword() == null || user.getPassword().isEmpty() ) {
+            throw new Exception("All fields (username, name, email, password) are required");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

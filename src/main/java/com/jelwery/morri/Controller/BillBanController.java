@@ -1,5 +1,8 @@
 package com.jelwery.morri.Controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.BillBan;
+import com.jelwery.morri.Repository.BillBanRepository;
 import com.jelwery.morri.Service.BillBanService;
 
 @RestController
@@ -19,6 +23,8 @@ import com.jelwery.morri.Service.BillBanService;
 public class BillBanController {
     @Autowired
     private BillBanService billBanService;
+    @Autowired
+    private BillBanRepository billBanRepository;
 
     @PostMapping("/create")
     public BillBan createBillBan(@RequestBody BillBan billBan) {
@@ -35,5 +41,41 @@ public class BillBanController {
     @PatchMapping("/update/{billBanId}")
     public BillBan updateBillBan(@PathVariable("billBanId") String billBanId, @RequestBody BillBan updatedBillBan) {
         return billBanService.updateBillBan(billBanId, updatedBillBan);
+    }
+     @GetMapping("/today")
+    public List<BillBan> getToday() {
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
+        return billBanRepository.findByCreateAtBetween(startOfDay, endOfDay);
+    }
+
+    @GetMapping("/thisweek")
+    public List<BillBan> getCurrentWeek() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            .withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+            .withHour(23).withMinute(59).withSecond(59);
+        return billBanRepository.findByCreateAtBetween(startOfWeek, endOfWeek);
+    }
+
+    @GetMapping("/thismonth")
+    public List<BillBan> getCurrentMonth() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfMonth = now.withDayOfMonth(1)
+            .withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth())
+            .withHour(23).withMinute(59).withSecond(59);
+        return billBanRepository.findByCreateAtBetween(startOfMonth, endOfMonth);
+    }
+
+    @GetMapping("/thisyear")
+    public List<BillBan> getCurrentYear() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfYear = now.withDayOfYear(1)
+            .withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfYear = now.with(TemporalAdjusters.lastDayOfYear())
+            .withHour(23).withMinute(59).withSecond(59);
+        return billBanRepository.findByCreateAtBetween(startOfYear, endOfYear);
     }
 }
