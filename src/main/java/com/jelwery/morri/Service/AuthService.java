@@ -43,9 +43,8 @@ public class AuthService {
         if (user.getUsername() == null || user.getUsername().isEmpty() ||
                 user.getName() == null || user.getName().isEmpty() ||
                 user.getEmail() == null || user.getEmail().isEmpty() ||
-                user.getPassword() == null || user.getPassword().isEmpty() ||
-                user.getGender() == null) {
-            throw new Exception("All fields (username, name, email, password, gender) are required");
+                user.getPassword() == null || user.getPassword().isEmpty() ) {
+            throw new Exception("All fields (username, name, email, password) are required");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -91,8 +90,8 @@ public class AuthService {
         }
         User user = userOptional.get();
         String token = jwtUtil.generateToken(user.getEmail(),user.getRole() );
-
-        String resetLink = "http://..." + token;
+//        http://localhost:3000/unauthorized
+        String resetLink = "http://localhost:3000/" + token;
         // Send the email
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());

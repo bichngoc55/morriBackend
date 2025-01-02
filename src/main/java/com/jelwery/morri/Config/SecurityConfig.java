@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
                         .requestMatchers("/sales/**").hasAnyRole("ADMIN", "SALE_STAFF")
                         .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**",
-                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**").permitAll()
+                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**","/billMua/**","/productMuaLai/**").permitAll()
 
                         .anyRequest().authenticated()
                 ) 

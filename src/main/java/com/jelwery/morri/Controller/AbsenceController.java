@@ -22,8 +22,9 @@ public class AbsenceController {
     @Autowired
     private AbsenceService absenceService;
  
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Absence> createAbsence(@RequestBody Absence absence) {
+        System.out.println(absence);  
         Absence createdAbsence = absenceService.createAbsence(absence);
         return ResponseEntity.ok(createdAbsence);
     }

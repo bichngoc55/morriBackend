@@ -95,16 +95,26 @@ public class BillBanService {
     }
 
     public BillBan updateBillBanStatus(String billBanId, BillStatus newStatus) {
-    BillBan existingBillBan = billBanRepository.findById(billBanId)
-            .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
+        BillBan existingBillBan = billBanRepository.findById(billBanId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
     
-    if (newStatus != null) {
-        existingBillBan.setStatus(newStatus);  
+        if (newStatus != null && newStatus.equals(BillStatus.CANCELLED)) {
+            for (BillBan.OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
+                Product product = orderDetail.getProduct();
+                product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+                productRepository.save(product); 
+            }
+            billBanRepository.deleteById(billBanId);
+            return existingBillBan; 
+        }
+    
+        if (newStatus != null) {
+            existingBillBan.setStatus(newStatus);
+        }
+    
+        return billBanRepository.save(existingBillBan);
     }
     
-    return billBanRepository.save(existingBillBan);
-    }
-
     public BillBan updateBillBan(String billBanId, BillBan updatedBillBan) {  
         BillBan existingBillBan = billBanRepository.findById(billBanId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
