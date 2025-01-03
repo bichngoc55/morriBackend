@@ -59,8 +59,6 @@ public class InventoryController {
             List<InventoryReport> result = inventoryService.getInventoryByDay(dateTime);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            // Log lỗi để biết thêm thông tin khi gặp sự cố
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(null);
         }
     }
