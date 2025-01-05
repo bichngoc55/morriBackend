@@ -30,8 +30,10 @@ public class SalaryController {
     public ResponseEntity<Salary> calculateMonthlySalary(
             @PathVariable String employeeId,
             @RequestParam int year,
-            @RequestParam int month) {
+            @RequestParam int month , Salary salaryDTO) {
         Salary salary = salaryService.calculateMonthlySalary(employeeId, year, month);
+        // them salary DTO nua 
+        //  product completed
         return ResponseEntity.ok(salary);
     }
     

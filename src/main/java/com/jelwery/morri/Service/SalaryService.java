@@ -28,40 +28,33 @@ public class SalaryService {
     private UserRepository userRepository;
 
     @Transactional
-    public Salary calculateMonthlySalary(String employeeId, int year, int month) {
-        // Get attendance record for the month
+    public Salary calculateMonthlySalary(String employeeId, int year, int month) { 
         Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
                 userRepository.findById(employeeId)
                     .orElseThrow(() -> new ResourceNotFoundException("Employee not found")),
                 year, month)
             .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
-
-        // Create new salary record
+ 
         Salary salary = new Salary();
         salary.setEmployeeId(employeeId);
         salary.setSalaryReceiveDate(LocalDateTime.now());
         salary.setSalaryCommissionBased(0.0);
         salary.setSalaryHourlyBased(0.0);
         salary.setSalaryDailyBased(0.0);
-
-        // Calculate and set salary for each type
+ 
         calculateCommissionBasedSalary(salary, attendance);
         calculateHourlyBasedSalary(salary, attendance);
         calculateDailyBasedSalary(salary, attendance);
-
-        // Sum the calculated salaries
+ 
         salary.setTotalSalary(salary.getSalaryCommissionBased() + salary.getSalaryHourlyBased() + salary.getSalaryDailyBased());
-
-        // Calculate bonus and penalties
+ 
         calculateBonusAndPenalties(salary);
-        
-        // Calculate final salary
+         
         salary.setTotalSalary(salary.getTotalSalary() + salary.getTotalBonusAndPenalty());
 
         return salaryRepository.save(salary);
     }
-    
-    // Calculate Commission-Based Salary
+     
     private void calculateCommissionBasedSalary(Salary salary, Attendance attendance) {
         if (salary.getCommissionRate() > 0 && salary.getProductsCompleted() != null) {
             double commissionPay = salary.getProductsCompleted() * salary.getCommissionRate();
@@ -70,8 +63,7 @@ public class SalaryService {
             salary.setSalaryCommissionBased(salary.getBaseSalary());
         }
     }
-    
-    // Calculate Hourly-Based Salary
+     
     private void calculateHourlyBasedSalary(Salary salary, Attendance attendance) {
         if (salary.getHourlyRate() != null && attendance.getTotalWorkingHours() != null) {
             double hourlyPay = attendance.getTotalWorkingHours() * salary.getHourlyRate();
@@ -79,9 +71,7 @@ public class SalaryService {
         } else {
             salary.setSalaryHourlyBased(0.0);
         }
-    }
-    
-    // Calculate Daily-Based Salary
+    } 
     private void calculateDailyBasedSalary(Salary salary, Attendance attendance) {
         if (salary.getBaseSalary() != null && salary.getWorkingDays() != null) {
             int actualWorkingDays = salary.getWorkingDays() - attendance.getTotalAbsences();

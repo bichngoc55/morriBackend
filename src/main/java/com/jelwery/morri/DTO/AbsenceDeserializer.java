@@ -28,8 +28,7 @@ public class AbsenceDeserializer extends JsonDeserializer<Object> {
     @Override
     public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
-        
-        // Handle both single object and array cases
+         
         if (node.isArray()) {
             List<Absence> absences = new ArrayList<>();
             for (JsonNode absenceNode : node) {

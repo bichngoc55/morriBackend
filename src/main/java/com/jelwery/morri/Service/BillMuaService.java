@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.BillMua;
-import com.jelwery.morri.Model.Product;
-import com.jelwery.morri.Model.ProductBoughtFromCustomer;
+import com.jelwery.morri.Model.Product; 
 import com.jelwery.morri.Repository.BillMuaRepository;
 import com.jelwery.morri.Repository.ProductRepository;
 
@@ -34,15 +33,15 @@ public class BillMuaService {
         if (bill.getTotalPrice() == null || bill.getTotalPrice() == 0) {
             double total = bill.getDsSanPhamDaMua().stream()
                 .mapToDouble(productBoughtFromCustomer -> 
-                    productBoughtFromCustomer.getProduct().getCostPrice() * productBoughtFromCustomer.getQuantity())
+                    productBoughtFromCustomer.getCostPrice() * productBoughtFromCustomer.getQuantity())
                 .sum();
 
             bill.setTotalPrice(total);
         }
 
         bill.setCreatedAt(LocalDateTime.now());
-        for (ProductBoughtFromCustomer productBoughtFromCustomer : bill.getDsSanPhamDaMua()) {
-        Product product = productBoughtFromCustomer.getProduct();
+        for (Product productBoughtFromCustomer : bill.getDsSanPhamDaMua()) {
+        Product product = productBoughtFromCustomer;
         int newQuantity = productBoughtFromCustomer.getQuantity();
         
         // Fetch the product from the database

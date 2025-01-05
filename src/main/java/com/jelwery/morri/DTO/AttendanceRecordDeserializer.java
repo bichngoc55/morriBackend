@@ -26,8 +26,7 @@ public class AttendanceRecordDeserializer   extends JsonDeserializer<Object>{
     @Override
     public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
-        
-        // Handle both single object and array cases
+         
         if (node.isArray()) {
             List<AttendanceRecord> records = new ArrayList<>();
             for (JsonNode recordNode : node) {

@@ -49,17 +49,14 @@ public class AttendanceService {
         record.setCheckIn(now);
         record.setCheckType(CHECKTYPE.IN);
         record.setEmployee(employee);
-
-        // Standard work day starts at 9 AM
+ 
         LocalTime standardStartTime = LocalTime.of(9, 0);
         
         if (now.toLocalTime().isAfter(standardStartTime.plusMinutes(15))) {
             record.setStatus(AttendanceStatus.LATE);
         } else {
             record.setStatus(AttendanceStatus.PRESENT);
-        }
-
-        // Get or create attendance for current month
+        } 
         Attendance attendance = getOrCreateAttendance(employee, now.getYear(), now.getMonthValue());
         
         record = attendanceRecordRepository.save(record);
@@ -80,15 +77,13 @@ public class AttendanceService {
         record.setEmployee(employee);
 
         Attendance attendance = getOrCreateAttendance(employee, now.getYear(), now.getMonthValue());
-        
-        // Find corresponding check-in record
+         
         AttendanceRecord checkInRecord = attendance.getAttendanceRecords().stream()
                 .filter(r -> r.getCheckType() == CHECKTYPE.IN && 
                         r.getDate().toLocalDate().equals(now.toLocalDate()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No check-in record found"));
-
-        // Calculate working hours
+ 
         double hours = ChronoUnit.MINUTES.between(checkInRecord.getCheckIn(), now) / 60.0;
         record.setWorkingHours(hours);
 
@@ -125,24 +120,21 @@ public class AttendanceService {
                     newAttendance.setMonth(month);
                     newAttendance.setAttendanceRecords(new ArrayList<>());
                     newAttendance.setAbsences(new ArrayList<>());
-                    newAttendance.setWorkingDays(20); // Default working days per month
+                    newAttendance.setWorkingDays(20);  
                     return attendanceRepository.save(newAttendance);
                 });
     }
 
-    private void updateAttendanceStats(Attendance attendance) {
-        // Calculate total working hours
+    private void updateAttendanceStats(Attendance attendance) { 
         attendance.setTotalWorkingHours(
             attendance.getAttendanceRecords().stream()
                 .filter(r -> r.getWorkingHours() != null)
                 .mapToDouble(AttendanceRecord::getWorkingHours)
                 .sum()
         );
-
-        // Calculate total absences
+ 
         attendance.setTotalAbsences(attendance.getAbsences().size());
-
-        // Calculate total late arrivals
+ 
         attendance.setTotalLateArrivals((int) attendance.getAttendanceRecords().stream()
                 .filter(r -> r.getStatus() == AttendanceStatus.LATE)
                 .count());
