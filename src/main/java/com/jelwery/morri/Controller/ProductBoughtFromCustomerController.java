@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 
 import com.jelwery.morri.Model.ProductBoughtFromCustomer;
 import com.jelwery.morri.Service.ProductBoughtFromCustomerService;
-
+ 
 @RestController
 @RequestMapping("/productMuaLai")
 @CrossOrigin(origins = "*")
