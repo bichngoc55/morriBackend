@@ -33,6 +33,7 @@ public class Attendance {
     @DocumentReference
     @JsonDeserialize(contentUsing = AbsenceDeserializer.class)
     private List<Absence> absences;
+    private List<Schedule> schedules;
      
     private Double totalWorkingHours;
     private Integer totalAbsences;

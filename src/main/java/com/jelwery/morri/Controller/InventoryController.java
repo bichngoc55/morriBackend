@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelwery.morri.DTO.InventoryReport;
 import com.jelwery.morri.Model.Inventory;
 import com.jelwery.morri.Service.InventoryService;
+@CrossOrigin(origins = "*")
 
 @RequestMapping("/inventory")
 @RestController
