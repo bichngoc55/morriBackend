@@ -13,10 +13,12 @@ import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.BillBan;
 import com.jelwery.morri.Model.BillBan.BillStatus;
 import com.jelwery.morri.Model.Customer;
+import com.jelwery.morri.Model.OrderDetail;
 import com.jelwery.morri.Model.Product;
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Repository.BillBanRepository;
 import com.jelwery.morri.Repository.CustomerRepository;
+import com.jelwery.morri.Repository.OrderDetailRepository;
 import com.jelwery.morri.Repository.ProductRepository;
 import com.jelwery.morri.Repository.UserRepository;
 
@@ -32,6 +34,8 @@ public class BillBanService {
     private BillBanRepository billBanRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
    
     public BillBan createBillBan(BillBan billBan) {
 
@@ -52,33 +56,44 @@ public class BillBanService {
         billBan.setCustomer(customer);
         billBan.setCreateAt(LocalDateTime.now());
         billBan.setNote(billBan.getNote());
-       
-        for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
-        Product product = productRepository.findById(orderDetail.getProduct().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
-                    orderDetail.getProduct().getId()));
-        
-        // Kiem tra so luong con trong kho
-        if (orderDetail.getQuantity() > product.getQuantity()) {
-            throw new IllegalArgumentException("Insufficient inventory for product: " + 
-                product.getName() + ". Available: " + product.getQuantity() + 
-                ", Requested: " + orderDetail.getQuantity());
-        }
-        orderDetail.setProduct(product);
-    }
+        billBan.setAdditionalCharge(billBan.getAdditionalCharge() != null ? billBan.getAdditionalCharge() : 0.0);
+ 
+        double totalPrice = 0.0;
+        ArrayList<OrderDetail> savedOrderDetails = new ArrayList<>();
 
+        for (OrderDetail orderDetail : billBan.getOrderDetails()) {
+            Product product = productRepository.findById(orderDetail.getProduct().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
+                        orderDetail.getProduct().getId()));
+            
+            if (orderDetail.getQuantity() > product.getQuantity()) {
+                throw new IllegalArgumentException("Insufficient inventory for product: " + 
+                    product.getName() + ". Available: " + product.getQuantity() + 
+                    ", Requested: " + orderDetail.getQuantity());
+            }
+            
+            // orderDetail.setProduct(product);
+            // orderDetail.setUnitPrice(product.getSellingPrice());
+            // orderDetail.setSubtotal(orderDetail.getQuantity() * orderDetail.getUnitPrice());
+            OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
+            savedOrderDetails.add(savedOrderDetail);
+             
+            totalPrice += orderDetail.getSubtotal();
+        }
+        // 
+        billBan.setOrderDetails(savedOrderDetails);
+        billBan.setTotalPrice(totalPrice + billBan.getAdditionalCharge());
         BillBan savedBillBan = billBanRepository.save(billBan);
 
-        ArrayList<String> newList = customer.getDanhSachSanPhamDaMua();
-        if (newList == null) {
-            newList = new ArrayList<>();
+        ArrayList<String> purchaseHistory = customer.getDanhSachSanPhamDaMua();
+        if (purchaseHistory == null) {
+            purchaseHistory = new ArrayList<>();
         }
-        newList.add(savedBillBan.getId());
-        customer.setDanhSachSanPhamDaMua(newList);
-        
+        purchaseHistory.add(savedBillBan.getId());
+        customer.setDanhSachSanPhamDaMua(purchaseHistory);
         customerRepository.save(customer);
           // Cap nhat so luong con trong kho
-        for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
+        for (OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = orderDetail.getProduct();
             product.setQuantity(product.getQuantity() - orderDetail.getQuantity());
             productRepository.save(product);
@@ -99,7 +114,7 @@ public class BillBanService {
                 .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
     
         if (newStatus != null && newStatus.equals(BillStatus.CANCELLED)) {
-            for (BillBan.OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
+            for (OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
                 Product product = orderDetail.getProduct();
                 product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
                 productRepository.save(product); 
@@ -143,5 +158,7 @@ public class BillBanService {
 
         return billBanRepository.save(existingBillBan);
         } 
+       
+
         
 }

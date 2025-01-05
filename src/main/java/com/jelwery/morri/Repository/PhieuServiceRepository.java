@@ -12,8 +12,7 @@ import com.jelwery.morri.Model.User;
 public interface PhieuServiceRepository extends MongoRepository<PhieuService,String>{
     Optional<PhieuService> findByNameService(String nameService);
     List<PhieuService> findByStaffLapHoaDonId(String staffId);
-    List<PhieuService> findByStaffLamDichVuId(String staffId);
-    List<PhieuService> findByDeliverystatus(PhieuService.DELIVERYSTATUS status);
+    List<PhieuService> findByStaffLamDichVuId(String staffId); 
     boolean existsByNameService(String nameService);
  
 }

@@ -17,7 +17,7 @@ public class BillMuaService {
     public BillMua createBill(BillMua bill) { 
         if (bill.getTotalPrice() == null || bill.getTotalPrice() == 0) {
             double total = bill.getDsSanPhamDaMua().stream()
-                .mapToDouble(product -> product.getPrice() * product.getQuantity())
+                .mapToDouble(product -> product.getCostPrice() * product.getQuantity())
                 .sum();
             bill.setTotalPrice(total);
         }

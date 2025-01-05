@@ -78,13 +78,13 @@ public class PhieuDichVuService {
             existingPhieuService.setDescription(phieuServiceDetails.getDescription());
         }
         
-        // if (phieuServiceDetails.getStaffLapHoaDonId() != null) {
-        //     existingPhieuService.setStaffLapHoaDonId(phieuServiceDetails.getStaffLapHoaDonId());
-        // }
+        if (phieuServiceDetails.getStaffLapHoaDon() != null) {
+            existingPhieuService.setStaffLapHoaDon(phieuServiceDetails.getStaffLapHoaDon());
+        }
         
-        // if (phieuServiceDetails.getStaffLamDichVuId() != null) {
-        //     existingPhieuService.setStaffLamDichVuId(phieuServiceDetails.getStaffLamDichVuId());
-        // }
+        if (phieuServiceDetails.getStaffLamDichVu() != null) {
+            existingPhieuService.setStaffLamDichVu(phieuServiceDetails.getStaffLamDichVu());
+        }
         
         if (phieuServiceDetails.getQuantity() > 0) {
             existingPhieuService.setQuantity(phieuServiceDetails.getQuantity());
@@ -94,13 +94,12 @@ public class PhieuDichVuService {
             existingPhieuService.setTotalPrice(phieuServiceDetails.getTotalPrice());
         }
         
-        if (phieuServiceDetails.getDeliveryDate() != null) {
-            existingPhieuService.setDeliveryDate(phieuServiceDetails.getDeliveryDate());
-        }
+        if (phieuServiceDetails.getPhieuServiceStatus() != null) {
+            existingPhieuService.setPhieuServiceStatus(phieuServiceDetails.getPhieuServiceStatus());
+
+         }
         
-        if (phieuServiceDetails.getDeliverystatus() != null) {
-            existingPhieuService.setDeliverystatus(phieuServiceDetails.getDeliverystatus());
-        }
+        
         
         return phieuServiceRepository.save(existingPhieuService);
     }
@@ -110,9 +109,6 @@ public class PhieuDichVuService {
         phieuServiceRepository.delete(phieuService);
     }
  
-
-    public List<PhieuService> getPhieuServicesByStatus(PhieuService.DELIVERYSTATUS status) {
-        return phieuServiceRepository.findByDeliverystatus(status);
-    }
+ 
 
 }

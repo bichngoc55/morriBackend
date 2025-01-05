@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.CustomerDeserializer;
 import com.jelwery.morri.DTO.ServiceDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
@@ -22,9 +23,14 @@ import lombok.NoArgsConstructor;
 @Data
 public class PhieuService {
     @Id
-    private String id;
-    @Indexed(unique = true)
+    private String id; 
     private String nameService;
+    private String customerName;
+    private String customerPhone;
+    private String customerGender;
+    @DocumentReference
+    @JsonDeserialize(contentUsing = CustomerDeserializer.class)
+    private Customer customerID;
     @DocumentReference
      @JsonDeserialize(contentUsing = ServiceDeserializer.class)
     private List<Service> services;
@@ -38,11 +44,10 @@ public class PhieuService {
     private int quantity;
     private Double totalPrice;
     @CreatedDate
-    private LocalDateTime createdAt;
-    private Date deliveryDate;
-    private DELIVERYSTATUS deliverystatus;
+    private LocalDateTime createdAt; 
+    private STATUS phieuServiceStatus;
       
-    public enum DELIVERYSTATUS{
+    public enum STATUS{
         COMPLETED,
         NOT_YET
     }

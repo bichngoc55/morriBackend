@@ -15,50 +15,29 @@ import com.jelwery.morri.DTO.InventoryReport;
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.BillBan;
 import com.jelwery.morri.Model.Inventory;
+import com.jelwery.morri.Model.InventoryProduct;
+import com.jelwery.morri.Model.OrderDetail;
 import com.jelwery.morri.Model.Product;
 import com.jelwery.morri.Repository.BillBanRepository;
+import com.jelwery.morri.Repository.InventoryProductRepository;
 import com.jelwery.morri.Repository.InventoryRepository;
+import com.jelwery.morri.Repository.ProductRepository;
 
 @Service 
 public class InventoryService {
-    // @Autowired
-    // private InventoryRepository inventoryRepository;
- 
-    // public List<Inventory> getAllInventories() {
-    //     return inventoryRepository.findAll();
-    // }
- 
-    // public Inventory getInventoryById(String id) {
-    //     return inventoryRepository.findById(id).orElseThrow(() -> 
-    //         new RuntimeException("Inventory not found with ID: " + id));
-    // }
- 
-    // public Inventory addInventory(Inventory inventory) {
-    //     return inventoryRepository.save(inventory);
-    // }
- 
-    // public Inventory updateInventory(String id, Inventory inventoryDetails) {
-    //     Inventory existingInventory = getInventoryById(id);
-    //     existingInventory.setName(inventoryDetails.getName());
-    //     existingInventory.setQuantity(inventoryDetails.getQuantity());
-    //     existingInventory.setSupplierId(inventoryDetails.getSupplierId());
-    //     existingInventory.setUserId(inventoryDetails.getUserId());
-    //     existingInventory.setTotalPrice(inventoryDetails.getTotalPrice());
-    //     existingInventory.setInventoryProducts(inventoryDetails.getInventoryProducts());
-    //     return inventoryRepository.save(existingInventory);
-    // }
- 
-    // public void deleteInventory(String id) {
-    //     inventoryRepository.deleteById(id);
-    // }
+    
     @Autowired
     private InventoryRepository inventoryRepository;
     @Autowired
     private ProductService productService;
     @Autowired
+    private ProductRepository productRepository;
+    @Autowired
     private BillBanRepository billBanRepository;
     @Autowired
     private BillBanService billBanService;
+    @Autowired 
+    private InventoryProductRepository inventoryProductRepository;
     
     public List<Inventory> getAllInventories() {
         return inventoryRepository.findAll();
@@ -73,9 +52,35 @@ public class InventoryService {
         System.out.println("Inventory : " + inventory);
         inventory.setNgayNhapKho(LocalDateTime.now());
         
-        // Calculate quantity from products if not set
-        if (inventory.getQuantity() == 0 && inventory.getInventoryProducts() != null) {
-            inventory.setQuantity(inventory.getInventoryProducts().size());
+     
+        if (inventory.getInventoryProducts() != null) {
+            ArrayList<InventoryProduct> savedProducts = new ArrayList<>();
+            int totalQuantity = 0;
+            double totalPrice = 0.0;
+            
+            for (InventoryProduct invProduct : inventory.getInventoryProducts()) { 
+                Product product = productRepository.findById(invProduct.getProduct().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + 
+                        invProduct.getProduct().getId()));
+                
+                invProduct.setProduct(product);
+                 
+                InventoryProduct savedInvProduct = inventoryProductRepository.save(invProduct);
+                savedProducts.add(savedInvProduct);
+                 
+                product.setQuantity(product.getQuantity() + invProduct.getEnteredQuantity());
+                productRepository.save(product);
+                
+                totalQuantity += invProduct.getEnteredQuantity();
+                totalPrice += (product.getSellingPrice() * invProduct.getEnteredQuantity());
+            }
+            
+            inventory.setInventoryProducts(savedProducts);
+            inventory.setQuantity(totalQuantity);
+            
+            if (inventory.getTotalPrice() == null) {
+                inventory.setTotalPrice(totalPrice);
+            }
         }
         
         return inventoryRepository.save(inventory);
@@ -85,7 +90,7 @@ public class InventoryService {
         Map<Product, Integer> productQuantities = new HashMap<>();
     
         for (Inventory inventory : inventories) {
-            for (Inventory.InventoryProduct inventoryProduct : inventory.getInventoryProducts()) {
+            for (InventoryProduct inventoryProduct : inventory.getInventoryProducts()) {
                 Product product = inventoryProduct.getProduct();
                 int quantity = inventoryProduct.getEnteredQuantity();
     
@@ -102,7 +107,7 @@ public class InventoryService {
     Map<Product, Integer> soldQuantities = new HashMap<>();
 
     for (BillBan bill : bills) {
-        for (BillBan.OrderDetail orderDetail : bill.getOrderDetails()) {
+        for (OrderDetail orderDetail : bill.getOrderDetails()) {
             Product product = orderDetail.getProduct();
             int quantity = orderDetail.getQuantity();
 

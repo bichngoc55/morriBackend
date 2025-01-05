@@ -90,13 +90,13 @@ public class BillBanController {
     }
  
 
-@DeleteMapping("/{billBanId}")
-public ResponseEntity<Void> deleteBillBan(@PathVariable String billBanId) {
-    try {
-        billBanService.updateBillBanStatus(billBanId, BillStatus.CANCELLED);
-        return ResponseEntity.ok().build();
-    } catch (ResourceNotFoundException e) {
-        return ResponseEntity.notFound().build();
+    @DeleteMapping("/{billBanId}")
+    public ResponseEntity<Void> deleteBillBan(@PathVariable String billBanId) {
+        try {
+            billBanService.updateBillBanStatus(billBanId, BillStatus.CANCELLED);
+            return ResponseEntity.ok().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-}
 }
