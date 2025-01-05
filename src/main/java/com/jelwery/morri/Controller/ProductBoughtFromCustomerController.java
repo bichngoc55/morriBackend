@@ -17,10 +17,10 @@ import org.springframework.http.HttpStatus;
 
 import com.jelwery.morri.Model.ProductBoughtFromCustomer;
 import com.jelwery.morri.Service.ProductBoughtFromCustomerService;
-
+ 
 @RestController
 @RequestMapping("/productMuaLai")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 public class ProductBoughtFromCustomerController {
     @Autowired
     private ProductBoughtFromCustomerService productService;
