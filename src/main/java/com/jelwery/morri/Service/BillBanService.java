@@ -34,59 +34,82 @@ public class BillBanService {
     private ProductRepository productRepository;
    
     public BillBan createBillBan(BillBan billBan) {
-
-        if (billBan.getStaff() != null) {
+        // Staff validation
+        if (billBan.getStaff() != null && billBan.getStaff().getEmail() != null) {
             User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
+                .orElseThrow(() -> new IllegalArgumentException("Staff not found with email: " + billBan.getStaff().getEmail()));
             billBan.setStaff(staff);
+        } else {
+            billBan.setStaff(null);
         }
-        else billBan.setStaff(null);
-
+    
+        // Customer validation
+        if (billBan.getCustomer() == null || billBan.getCustomer().getPhoneNumber() == null) {
+            throw new IllegalArgumentException("Customer phone number is required");
+        }
+        
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
-
-        if (customer.getId() == null) {
-            throw new IllegalArgumentException("Customer ID is null");
-        }
-            
+            .orElseThrow(() -> new IllegalArgumentException("Customer not found with phone number: " + 
+                billBan.getCustomer().getPhoneNumber()));
+    
         billBan.setCustomer(customer);
         billBan.setCreateAt(LocalDateTime.now());
-        billBan.setNote(billBan.getNote());
-       
+    
+        // Validate and process order details
+        if (billBan.getOrderDetails() == null || billBan.getOrderDetails().isEmpty()) {
+            throw new IllegalArgumentException("Order details cannot be empty");
+        }
+    
+        double calculatedTotal = 0.0;
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
-        Product product = productRepository.findById(orderDetail.getProduct().getId())
+            if (orderDetail.getProduct() == null || orderDetail.getProduct().getId() == null) {
+                throw new IllegalArgumentException("Invalid product information in order details");
+            }
+    
+            Product product = productRepository.findById(orderDetail.getProduct().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
                     orderDetail.getProduct().getId()));
-        
-        // Kiem tra so luong con trong kho
-        if (orderDetail.getQuantity() > product.getQuantity()) {
-            throw new IllegalArgumentException("Insufficient inventory for product: " + 
-                product.getName() + ". Available: " + product.getQuantity() + 
-                ", Requested: " + orderDetail.getQuantity());
+    
+            // Validate inventory
+            if (orderDetail.getQuantity() > product.getQuantity()) {
+                throw new IllegalArgumentException("Insufficient inventory for product: " + 
+                    product.getName() + ". Available: " + product.getQuantity() + 
+                    ", Requested: " + orderDetail.getQuantity());
+            }
+    
+            orderDetail.setProduct(product);
+            calculatedTotal += orderDetail.getSubtotal();
         }
-        orderDetail.setProduct(product);
-    }
-
+    
+        // Validate total price
+        if (Math.abs(billBan.getTotalPrice() - calculatedTotal) > 0.01) {
+            throw new IllegalArgumentException("Total price mismatch. Calculated: " + 
+                calculatedTotal + ", Provided: " + billBan.getTotalPrice());
+        }
+    
+        // Save bill
         BillBan savedBillBan = billBanRepository.save(billBan);
-
-        ArrayList<String> newList = customer.getDanhSachSanPhamDaMua();
-        if (newList == null) {
-            newList = new ArrayList<>();
+    
+        // Update customer purchase history
+        ArrayList<String> purchaseHistory = customer.getDanhSachSanPhamDaMua();
+        if (purchaseHistory == null) {
+            purchaseHistory = new ArrayList<>();
         }
-        newList.add(savedBillBan.getId());
-        customer.setDanhSachSanPhamDaMua(newList);
-        
+        purchaseHistory.add(savedBillBan.getId());
+        customer.setDanhSachSanPhamDaMua(purchaseHistory);
         customerRepository.save(customer);
-          // Cap nhat so luong con trong kho
+    
+        // Update inventory
         for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = orderDetail.getProduct();
             product.setQuantity(product.getQuantity() - orderDetail.getQuantity());
             productRepository.save(product);
-        }
 
+        }
+    
         return savedBillBan;
     }
-
+    
      public List<BillBan> getAllBillBan() {
         return billBanRepository.findAll();
     } 

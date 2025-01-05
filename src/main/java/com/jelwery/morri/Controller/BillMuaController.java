@@ -1,9 +1,9 @@
 package com.jelwery.morri.Controller;
 
 import java.util.List;
-import org.springframework.http.HttpStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +24,7 @@ public class BillMuaController {
  @Autowired
     private BillMuaService billService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<BillMua> createBill(@RequestBody BillMua bill) {
         return new ResponseEntity<>(billService.createBill(bill), HttpStatus.CREATED);
     }

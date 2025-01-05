@@ -29,11 +29,11 @@ public class ProductBoughtFromCustomerService {
 
     public ProductBoughtFromCustomer updateProduct(String id, ProductBoughtFromCustomer updatedProduct) {
         ProductBoughtFromCustomer existingProduct = getProductById(id);
-        existingProduct.setName(updatedProduct.getName());
-        existingProduct.setPrice(updatedProduct.getPrice());
+        // existingProduct.setName(updatedProduct.getName());
+        // existingProduct.setPrice(updatedProduct.getPrice());
         existingProduct.setQuantity(updatedProduct.getQuantity());
-        existingProduct.setLoaiSanPham(updatedProduct.getLoaiSanPham());
-        existingProduct.setMaterial(updatedProduct.getMaterial());
+        // existingProduct.setLoaiSanPham(updatedProduct.getLoaiSanPham());
+        // existingProduct.setMaterial(updatedProduct.getMaterial());
         return productRepository.save(existingProduct);
     }
 

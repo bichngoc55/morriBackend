@@ -1,6 +1,5 @@
 package com.jelwery.morri.Model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -38,5 +37,5 @@ public class BillMua {
     @JsonDeserialize(contentUsing = UserDeserializer.class)
     private User staffId;
     @CreatedDate
-    private LocalDate createdAt; 
+    private LocalDateTime createdAt; 
 }

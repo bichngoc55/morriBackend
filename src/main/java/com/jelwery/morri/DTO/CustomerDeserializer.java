@@ -21,7 +21,7 @@ public class CustomerDeserializer extends JsonDeserializer<Customer>{
     public Customer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         String userId = p.getText();
         return customerRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("customer not found with id: " + userId));
     }
 
 }
