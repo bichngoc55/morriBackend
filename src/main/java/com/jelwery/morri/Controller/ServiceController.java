@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 @RequestMapping("/service")
 @RestController
 public class ServiceController {

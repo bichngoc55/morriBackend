@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.PhieuService;
 import com.jelwery.morri.Service.PhieuDichVuService;
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/phieuDichVu") 

@@ -20,7 +20,7 @@ import com.jelwery.morri.Service.ProductBoughtFromCustomerService;
  
 @RestController
 @RequestMapping("/productMuaLai")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 public class ProductBoughtFromCustomerController {
     @Autowired
     private ProductBoughtFromCustomerService productService;

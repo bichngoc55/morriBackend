@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.Schedule;
 import com.jelwery.morri.Service.ScheduleService;
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/schedule") 
