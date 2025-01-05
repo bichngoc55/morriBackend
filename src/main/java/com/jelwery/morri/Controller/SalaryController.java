@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.BonusPenaltyRecord;
@@ -24,42 +25,34 @@ import com.jelwery.morri.Service.SalaryService;
 public class SalaryController {
     @Autowired
     private SalaryService salaryService;
-
-    @GetMapping
-    public List<Salary> getAllSalaries() {
-        return salaryService.getAllSalaries();
+    
+    @PostMapping("/calculate/{employeeId}")
+    public ResponseEntity<Salary> calculateMonthlySalary(
+            @PathVariable String employeeId,
+            @RequestParam int year,
+            @RequestParam int month , Salary salaryDTO) {
+        Salary salary = salaryService.calculateMonthlySalary(employeeId, year, month);
+        // them salary DTO nua 
+        //  product completed
+        return ResponseEntity.ok(salary);
     }
-
-    @GetMapping("/{id}")
-    public Salary getSalaryById(@PathVariable String id) {
-        return salaryService.getSalaryById(id);
+    
+    @PostMapping("/{salaryId}/bonus-penalty")
+    public ResponseEntity<Salary> addBonusPenaltyRecord(
+            @PathVariable String salaryId,
+            @RequestBody BonusPenaltyRecord record) {
+        Salary updatedSalary = salaryService.addBonusPenaltyRecord(salaryId, record);
+        return ResponseEntity.ok(updatedSalary);
     }
-
-    // @GetMapping("/employee/{employeeId}")
-    // public List<Salary> getSalariesByEmployeeId(@PathVariable String employeeId) {
-    //     return salaryService.getSalariesByEmployeeId(employeeId);
-    // }
-
-    @PostMapping
-    public Salary createSalary(@RequestBody Salary salary) {
-        return salaryService.createSalary(salary);
-    }
-
-    @PutMapping("/{id}")
-    public Salary updateSalary(@PathVariable String id, @RequestBody Salary salaryDetails) {
-        return salaryService.updateSalary(id, salaryDetails);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSalary(@PathVariable String id) {
         salaryService.deleteSalary(id);
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/{id}/bonus-penalty")
-    public Salary addBonusPenaltyRecord(
-            @PathVariable String id,
-            @RequestBody BonusPenaltyRecord record) {
-        return salaryService.addBonusPenaltyRecord(id, record);
-    }
+    @GetMapping("/")
+    public  ResponseEntity<?>  getAllSalary() {
+        salaryService.getAllSalaries();
+        return ResponseEntity.ok().build();    }
+    
+  
 }

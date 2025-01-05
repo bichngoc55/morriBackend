@@ -8,6 +8,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.CustomerDeserializer;
+import com.jelwery.morri.DTO.OrderDetailDeserializer;
+import com.jelwery.morri.DTO.UserDeserializer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,14 +27,14 @@ public class BillBan {
     private Double totalPrice;
     private BillStatus status;
     private PaymentMethod paymentMethod;
-    @DBRef
-    @Reference
+    @DocumentReference
+    @JsonDeserialize(contentUsing = CustomerDeserializer.class)
     private Customer customer;
+    @JsonDeserialize(contentUsing = OrderDetailDeserializer.class)
     private ArrayList<OrderDetail> orderDetails;
-    @DBRef
-    @Reference
+    @DocumentReference
+    @JsonDeserialize(contentUsing = UserDeserializer.class)
     private User staff;
-    
     private Double additionalCharge = 0.0;
     
     @CreatedDate
@@ -41,22 +47,5 @@ public class BillBan {
         COMPLETED
     }
 
-    @Data
-    @NoArgsConstructor
-    public static class OrderDetail {
-       
-        @DBRef
-        @Reference
-        private Product product;
-        private int quantity;
-        private double unitPrice;
-        private double subtotal;
-
-        public OrderDetail(Product product, int quantity, double unitPrice, double subtotal) {
-            this.product = product;
-            this.quantity = quantity;
-            this.unitPrice = unitPrice;
-            this.subtotal = subtotal;
-        }
-    }
+   
 }

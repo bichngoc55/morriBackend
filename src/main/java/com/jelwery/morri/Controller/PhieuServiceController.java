@@ -61,20 +61,6 @@ public class PhieuServiceController {
         return ResponseEntity.ok().build();
     }
 
-    // @GetMapping("/staff-lap-hoa-don/{staffId}")
-    // public List<PhieuService> getPhieuServicesByStaffLapHoaDon(@PathVariable String staffId) {
-    //     return phieuServiceService.getPhieuServicesByStaffLapHoaDon(staffId);
-    // }
-
-    // @GetMapping("/staff-lam-dich-vu/{staffId}")
-    // public List<PhieuService> getPhieuServicesByStaffLamDichVu(@PathVariable String staffId) {
-    //     return phieuServiceService.getPhieuServicesByStaffLamDichVu(staffId);
-    // }
-
-    @GetMapping("/status/{status}")
-    public List<PhieuService> getPhieuServicesByStatus(
-            @PathVariable PhieuService.DELIVERYSTATUS status) {
-        return phieuServiceService.getPhieuServicesByStatus(status);
-    }
+    
 
 }

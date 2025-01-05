@@ -23,12 +23,12 @@ public class Absence {
     private String id;
     @CreatedDate
     private LocalDateTime date;
+    @DocumentReference
+    @JsonDeserialize(using = UserDeserializer.class)
+    private User employee;
     
     private String reason;
-    private AbsenceStatus status; 
-    @DocumentReference
-    @JsonDeserialize(contentUsing = UserDeserializer.class)
-    private User employeeId; 
+    private AbsenceStatus status;  
     public enum AbsenceStatus {
         PENDING,
         APPROVED,

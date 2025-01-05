@@ -13,10 +13,12 @@ import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.BillBan;
 import com.jelwery.morri.Model.BillBan.BillStatus;
 import com.jelwery.morri.Model.Customer;
+import com.jelwery.morri.Model.OrderDetail;
 import com.jelwery.morri.Model.Product;
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Repository.BillBanRepository;
 import com.jelwery.morri.Repository.CustomerRepository;
+import com.jelwery.morri.Repository.OrderDetailRepository;
 import com.jelwery.morri.Repository.ProductRepository;
 import com.jelwery.morri.Repository.UserRepository;
 
@@ -32,6 +34,8 @@ public class BillBanService {
     private BillBanRepository billBanRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
    
     public BillBan createBillBan(BillBan billBan) {
         // Staff validation
@@ -54,53 +58,47 @@ public class BillBanService {
     
         billBan.setCustomer(customer);
         billBan.setCreateAt(LocalDateTime.now());
-    
-        // Validate and process order details
-        if (billBan.getOrderDetails() == null || billBan.getOrderDetails().isEmpty()) {
-            throw new IllegalArgumentException("Order details cannot be empty");
-        }
-    
-        double calculatedTotal = 0.0;
-        for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
-            if (orderDetail.getProduct() == null || orderDetail.getProduct().getId() == null) {
-                throw new IllegalArgumentException("Invalid product information in order details");
-            }
-    
+        billBan.setNote(billBan.getNote());
+        billBan.setAdditionalCharge(billBan.getAdditionalCharge() != null ? billBan.getAdditionalCharge() : 0.0);
+ 
+        double totalPrice = 0.0;
+        ArrayList<OrderDetail> savedOrderDetails = new ArrayList<>();
+
+        for (OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = productRepository.findById(orderDetail.getProduct().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
-                    orderDetail.getProduct().getId()));
-    
-            // Validate inventory
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + 
+                        orderDetail.getProduct().getId()));
+            
             if (orderDetail.getQuantity() > product.getQuantity()) {
                 throw new IllegalArgumentException("Insufficient inventory for product: " + 
                     product.getName() + ". Available: " + product.getQuantity() + 
                     ", Requested: " + orderDetail.getQuantity());
             }
-    
-            orderDetail.setProduct(product);
-            calculatedTotal += orderDetail.getSubtotal();
+            
+            // orderDetail.setProduct(product);
+            // orderDetail.setUnitPrice(product.getSellingPrice());
+            // orderDetail.setSubtotal(orderDetail.getQuantity() * orderDetail.getUnitPrice());
+            OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
+            savedOrderDetails.add(savedOrderDetail);
+             
+            totalPrice += orderDetail.getSubtotal();
         }
-    
-        // Validate total price
-        if (Math.abs(billBan.getTotalPrice() - calculatedTotal) > 0.01) {
-            throw new IllegalArgumentException("Total price mismatch. Calculated: " + 
-                calculatedTotal + ", Provided: " + billBan.getTotalPrice());
-        }
-    
-        // Save bill
+        // 
+        billBan.setOrderDetails(savedOrderDetails);
+        billBan.setTotalPrice(totalPrice + billBan.getAdditionalCharge());
         BillBan savedBillBan = billBanRepository.save(billBan);
-    
-        // Update customer purchase history
+
         ArrayList<String> purchaseHistory = customer.getDanhSachSanPhamDaMua();
         if (purchaseHistory == null) {
             purchaseHistory = new ArrayList<>();
         }
         purchaseHistory.add(savedBillBan.getId());
         customer.setDanhSachSanPhamDaMua(purchaseHistory);
+        purchaseHistory.add(savedBillBan.getId());
+        customer.setDanhSachSanPhamDaMua(purchaseHistory);
         customerRepository.save(customer);
-    
-        // Update inventory
-        for (BillBan.OrderDetail orderDetail : billBan.getOrderDetails()) {
+          // Cap nhat so luong con trong kho
+        for (OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = orderDetail.getProduct();
             product.setQuantity(product.getQuantity() - orderDetail.getQuantity());
             productRepository.save(product);
@@ -122,7 +120,7 @@ public class BillBanService {
                 .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
     
         if (newStatus != null && newStatus.equals(BillStatus.CANCELLED)) {
-            for (BillBan.OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
+            for (OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
                 Product product = orderDetail.getProduct();
                 product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
                 productRepository.save(product); 
@@ -166,5 +164,7 @@ public class BillBanService {
 
         return billBanRepository.save(existingBillBan);
         } 
+       
+
         
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.Attendance;
@@ -13,14 +14,104 @@ import com.jelwery.morri.Model.BonusPenaltyRecord;
 import com.jelwery.morri.Model.Salary;
 import com.jelwery.morri.Repository.AttendanceRepository;
 import com.jelwery.morri.Repository.SalaryRepository;
+import com.jelwery.morri.Repository.UserRepository;
 
 @Service
 public class SalaryService {
-     @Autowired
+   @Autowired
     private SalaryRepository salaryRepository;
     
     @Autowired
     private AttendanceRepository attendanceRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public Salary calculateMonthlySalary(String employeeId, int year, int month) { 
+        Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+                userRepository.findById(employeeId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Employee not found")),
+                year, month)
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
+ 
+        Salary salary = new Salary();
+        salary.setEmployeeId(employeeId);
+        salary.setSalaryReceiveDate(LocalDateTime.now());
+        salary.setSalaryCommissionBased(0.0);
+        salary.setSalaryHourlyBased(0.0);
+        salary.setSalaryDailyBased(0.0);
+ 
+        calculateCommissionBasedSalary(salary, attendance);
+        calculateHourlyBasedSalary(salary, attendance);
+        calculateDailyBasedSalary(salary, attendance);
+ 
+        salary.setTotalSalary(salary.getSalaryCommissionBased() + salary.getSalaryHourlyBased() + salary.getSalaryDailyBased());
+ 
+        calculateBonusAndPenalties(salary);
+         
+        salary.setTotalSalary(salary.getTotalSalary() + salary.getTotalBonusAndPenalty());
+
+        return salaryRepository.save(salary);
+    }
+     
+    private void calculateCommissionBasedSalary(Salary salary, Attendance attendance) {
+        if (salary.getCommissionRate() > 0 && salary.getProductsCompleted() != null) {
+            double commissionPay = salary.getProductsCompleted() * salary.getCommissionRate();
+            salary.setSalaryCommissionBased(salary.getBaseSalary() + commissionPay);
+        } else {
+            salary.setSalaryCommissionBased(salary.getBaseSalary());
+        }
+    }
+     
+    private void calculateHourlyBasedSalary(Salary salary, Attendance attendance) {
+        if (salary.getHourlyRate() != null && attendance.getTotalWorkingHours() != null) {
+            double hourlyPay = attendance.getTotalWorkingHours() * salary.getHourlyRate();
+            salary.setSalaryHourlyBased(hourlyPay);
+        } else {
+            salary.setSalaryHourlyBased(0.0);
+        }
+    } 
+    private void calculateDailyBasedSalary(Salary salary, Attendance attendance) {
+        if (salary.getBaseSalary() != null && salary.getWorkingDays() != null) {
+            int actualWorkingDays = salary.getWorkingDays() - attendance.getTotalAbsences();
+            double dailyRate = salary.getBaseSalary() / salary.getWorkingDays();
+            salary.setSalaryDailyBased(dailyRate * actualWorkingDays);
+        } else {
+            salary.setSalaryDailyBased(0.0);
+        }
+    }
+    
+    
+    private void calculateBonusAndPenalties(Salary salary) {
+        if (salary.getBonusRecords() == null || salary.getBonusRecords().isEmpty()) {
+            salary.setTotalBonusAndPenalty(0.0);
+            return;
+        }
+        
+        double total = salary.getBonusRecords().stream()
+            .mapToDouble(record -> {
+                if (record.getType() == BonusPenaltyRecord.TYPERECORD.BONUS) {
+                    return record.getAmount();
+                } else {
+                    return -record.getAmount();
+                }
+            })
+            .sum();
+            
+        salary.setTotalBonusAndPenalty(total);
+    }
+    
+    public Salary addBonusPenaltyRecord(String salaryId, BonusPenaltyRecord record) {
+        Salary salary = salaryRepository.findById(salaryId)
+            .orElseThrow(() -> new ResourceNotFoundException("Salary record not found"));
+            
+        salary.getBonusRecords().add(record);
+        calculateBonusAndPenalties(salary);
+        salary.setTotalSalary(salary.getCalculatedBasePay() + salary.getTotalBonusAndPenalty());
+        
+        return salaryRepository.save(salary);
+    }
 
     public List<Salary> getAllSalaries() {
         return salaryRepository.findAll();
@@ -30,136 +121,13 @@ public class SalaryService {
         return salaryRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Salary not found with id: " + id));
     }
-
-    // public List<Salary> getSalariesByEmployeeId(String employeeId) {
-    //     return salaryRepository.findByEmployeeId(employeeId);
-    // }
-
-    public Salary createSalary(Salary salary) { 
-        System.out.println("Employee ID: " + salary.getEmployeeId());
-    System.out.println("Year: " + salary.getSalaryReceiveDate().getYear());
-    System.out.println("Month: " + salary.getSalaryReceiveDate().getMonthValue());
-
-        Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
-            salary.getEmployeeId(),
-            salary.getSalaryReceiveDate().getYear(),
-            salary.getSalaryReceiveDate().getMonthValue()
-        ).orElseThrow(() -> new ResourceNotFoundException("Attendance record not found")); 
-        salary.setCreatedAt(LocalDateTime.now());
-
-        calculateSalary(salary, attendance);
-        return salaryRepository.save(salary);
-    }
-
-    public Salary updateSalary(String id, Salary salaryDetails) {
-        Salary salary = getSalaryById(id);
-        
-        salary.setEmployeeId(salaryDetails.getEmployeeId());
-        salary.setSalaryType(salaryDetails.getSalaryType());
-        salary.setSalaryReceiveDate(salaryDetails.getSalaryReceiveDate());
-        salary.setBaseSalary(salaryDetails.getBaseSalary());
-        salary.setHourlyRate(salaryDetails.getHourlyRate());
-        salary.setCommissionRate(salaryDetails.getCommissionRate());
-        salary.setProductsCompleted(salaryDetails.getProductsCompleted());
-        salary.setBonusRecords(salaryDetails.getBonusRecords());
-         
-        Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
-            salary.getEmployeeId(),
-            salary.getSalaryReceiveDate().getYear(),
-            salary.getSalaryReceiveDate().getMonthValue()
-        ).orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
-        
-        calculateSalary(salary, attendance);
-        return salaryRepository.save(salary);
-    }
-
+ 
     public void deleteSalary(String id) {
         Salary salary = getSalaryById(id);
         salaryRepository.delete(salary);
     }
-
-    private void calculateSalary(Salary salary, Attendance attendance) { 
-        Integer workingDays = attendance.getWorkingDays();
-        Double totalWorkingHours = attendance.getTotalWorkingHours();
  
-        switch (salary.getSalaryType()) {
-            case COMMISSION_BASED:
-                salary.setCalculatedBasePay(
-                    salary.getBaseSalary() + 
-                    (salary.getProductsCompleted() * salary.getCommissionRate())
-                );
-                break;
-                
-            case HOURLY_BASED:
-                salary.setCalculatedBasePay(
-                    salary.getHourlyRate() * totalWorkingHours
-                );
-                break;
-                
-            case DAILY_BASED: 
-                double dailyRate = salary.getBaseSalary() / 22.0; 
-                salary.setCalculatedBasePay(dailyRate * workingDays);
-                break;
-        }
+  
  
-        double totalBonusAndPenalty = 0.0;
-        if (salary.getBonusRecords() != null) {
-            for (BonusPenaltyRecord record : salary.getBonusRecords()) {
-                if (record.getType() == BonusPenaltyRecord.TYPERECORD.BONUS) {
-                    totalBonusAndPenalty += record.getAmount();
-                } else {
-                    totalBonusAndPenalty -= record.getAmount();
-                }
-            }
-        }
-         
-        double attendancePenalty = calculateAttendancePenalty(attendance, salary.getBaseSalary());
-        totalBonusAndPenalty -= attendancePenalty;
-        
-        salary.setTotalBonusAndPenalty(totalBonusAndPenalty);
-        salary.setTotalSalary(salary.getCalculatedBasePay() + totalBonusAndPenalty);
-    }
-    
-    private double calculateAttendancePenalty(Attendance attendance, double baseSalary) {
-        double penalty = 0.0;
-         
-        if (attendance.getTotalLateArrivals() != null && attendance.getTotalLateArrivals() > 0) {
-            penalty += (attendance.getTotalLateArrivals() * (baseSalary * 0.001)); // 0.1% per late arrival
-        }
-         
-        if (attendance.getTotalAbsences() != null && attendance.getTotalAbsences() > 0) {
-            penalty += (attendance.getTotalAbsences() * (baseSalary * 0.05)); // 5% per absence
-        }
-        
-        return penalty;
-    }
-
-    public Salary addBonusPenaltyRecord(String salaryId, BonusPenaltyRecord record) {
-        Salary salary = getSalaryById(salaryId);
-        if (salary.getBonusRecords() == null) {
-            salary.setBonusRecords(new ArrayList<>());
-        }
-        salary.getBonusRecords().add(record);
-         
-        Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
-            salary.getEmployeeId(),
-            salary.getSalaryReceiveDate().getYear(),
-            salary.getSalaryReceiveDate().getMonthValue()
-        ).orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
-        //         List<Attendance> attendanceList = attendanceRepository.findByEmployeeIdAndYearAndMonth(
-        //     salary.getEmployeeId(),
-        //     salary.getSalaryReceiveDate().getYear(),
-        //     salary.getSalaryReceiveDate().getMonthValue()
-        // );
-
-        //     if (attendanceList.isEmpty()) {
-        //         throw new ResourceNotFoundException("Attendance record not found");
-        //     }
-
-        //     Attendance attendance = attendanceList.get(0); 
-
-        calculateSalary(salary, attendance);
-        return salaryRepository.save(salary);
-    }
 
 }
