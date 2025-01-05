@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jelwery.morri.DTO.CustomerDeserializer; 
+import com.jelwery.morri.DTO.CustomerDeserializer;
+import com.jelwery.morri.DTO.ProductBoughtFromCustomerDeserializer;
 import com.jelwery.morri.DTO.ProductDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
@@ -31,8 +32,8 @@ public class BillMua {
     private String cccd;
     private Integer status;
     @DocumentReference
-    @JsonDeserialize(contentUsing = ProductDeserializer.class)
-    private ArrayList<Product> dsSanPhamDaMua;
+    @JsonDeserialize(contentUsing = ProductBoughtFromCustomerDeserializer.class)
+    private ArrayList<ProductBoughtFromCustomer> dsSanPhamDaMua;
     @DocumentReference
     @JsonDeserialize(contentUsing = UserDeserializer.class)
     private User staffId;
