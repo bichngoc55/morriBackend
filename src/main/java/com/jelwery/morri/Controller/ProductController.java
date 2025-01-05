@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelwery.morri.Model.Product;
 import com.jelwery.morri.Service.ProductService;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 @RestController
 @RequestMapping("/jewelry")
 public class ProductController {

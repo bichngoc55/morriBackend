@@ -19,7 +19,7 @@ import com.jelwery.morri.Model.BillMua;
 import com.jelwery.morri.Service.BillMuaService;
 @RestController
 @RequestMapping("/billMua")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 public class BillMuaController {
  @Autowired
     private BillMuaService billService;

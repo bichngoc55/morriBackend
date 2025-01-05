@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Service.UserService;
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/user")

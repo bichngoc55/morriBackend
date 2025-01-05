@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.Absence;
 import com.jelwery.morri.Service.AbsenceService;
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/absence")

@@ -17,7 +17,7 @@ import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Service.CustomerService;
 
 @RequestMapping("/customer")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 public class CustomerController {

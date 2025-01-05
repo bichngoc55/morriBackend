@@ -26,7 +26,7 @@ import com.jelwery.morri.Model.BillBan;
 import com.jelwery.morri.Model.BillBan.BillStatus;
 import com.jelwery.morri.Repository.BillBanRepository;
 import com.jelwery.morri.Service.BillBanService;
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/billBan") 

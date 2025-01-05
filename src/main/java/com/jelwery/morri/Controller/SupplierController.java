@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin; 
 
 import java.util.List;
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "http://localhost:3000")  
 
 
 @RestController
