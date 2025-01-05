@@ -1,12 +1,13 @@
 package com.jelwery.morri.Service;
 
-import com.jelwery.morri.Model.Supplier;
-import com.jelwery.morri.Repository.SupplierRespository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import java.util.List;
+import com.jelwery.morri.Model.Supplier;
+import com.jelwery.morri.Repository.SupplierRespository;
 @Service
 public class SupplierService {
     @Autowired
@@ -21,4 +22,14 @@ public class SupplierService {
         return supplierRespository.findAll();
         
     }
+    public Supplier getSupplierByPhone(String supplierPhone) throws Exception {
+        Optional<Supplier> supplierOpt = supplierRespository.findBySupplierPhone(supplierPhone);
+        if (supplierOpt.isPresent()) {
+            return supplierOpt.get();
+        }
+        else {
+            throw new Exception("Customer with phone " + supplierPhone + " not found");
+        }
+    }
+
 }

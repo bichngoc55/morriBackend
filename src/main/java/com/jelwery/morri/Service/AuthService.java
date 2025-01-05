@@ -1,11 +1,9 @@
 package com.jelwery.morri.Service;
 
-import com.jelwery.morri.DTO.LoginDTO;
-import com.jelwery.morri.Model.Customer;
-import com.jelwery.morri.Model.User;
-import com.jelwery.morri.Repository.CustomerRepository;
-import com.jelwery.morri.Repository.UserRepository;
-import com.jelwery.morri.Utils.JWT;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,9 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.jelwery.morri.DTO.LoginDTO;
+import com.jelwery.morri.Model.Customer;
+import com.jelwery.morri.Model.User;
+import com.jelwery.morri.Repository.CustomerRepository;
+import com.jelwery.morri.Repository.UserRepository;
+import com.jelwery.morri.Utils.JWT;
 
 @Service
 public class AuthService {

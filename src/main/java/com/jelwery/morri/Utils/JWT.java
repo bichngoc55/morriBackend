@@ -1,17 +1,18 @@
 package com.jelwery.morri.Utils;
 
-import com.jelwery.morri.Model.ROLE;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.function.Function;
+
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.stereotype.Component;
+
+import com.jelwery.morri.Model.ROLE;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWT {

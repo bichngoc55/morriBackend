@@ -35,6 +35,10 @@ public class ProductController {
     public Product getProduct(@PathVariable("productId") String productId) {
         return productService.getProductById(productId);
     }
+    @GetMapping("/getProductByCode/{code}")
+    public Product getProductByCode(@PathVariable("code") String code) throws Exception {
+        return productService.getProductByCode(code);
+    }
     @PatchMapping("/update/{productId}")
     public Product updateProduct(@PathVariable("productId") String productId, @RequestBody Product updatedProduct) {
         return productService.updateProduct(productId, updatedProduct);

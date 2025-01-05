@@ -1,9 +1,11 @@
 package com.jelwery.morri.Model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id; 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed; 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
@@ -12,9 +14,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jelwery.morri.DTO.ServiceDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
-import java.time.LocalDateTime; 
-import java.util.Date;
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection="phieuService")
 @NoArgsConstructor

@@ -1,8 +1,9 @@
 package com.jelwery.morri.Service;
 
  import java.util.List;
+import java.util.Optional;
 
- import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +44,17 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     } 
+
+     public Product getProductByCode(String code) throws Exception {
+        Optional<Product> otp = productRepository.findByCode(code);
+        if (otp.isPresent()) {
+            return otp.get();
+        }
+        else {
+            throw new Exception("product with code " + code + " not found");
+        }
+    }
+
 
     public Product getProductById(String id) {
         return productRepository.findById(id)
