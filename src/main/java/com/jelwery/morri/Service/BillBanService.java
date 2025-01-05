@@ -38,21 +38,24 @@ public class BillBanService {
     private OrderDetailRepository orderDetailRepository;
    
     public BillBan createBillBan(BillBan billBan) {
-
-        if (billBan.getStaff() != null) {
+        // Staff validation
+        if (billBan.getStaff() != null && billBan.getStaff().getEmail() != null) {
             User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
-            .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
+                .orElseThrow(() -> new IllegalArgumentException("Staff not found with email: " + billBan.getStaff().getEmail()));
             billBan.setStaff(staff);
+        } else {
+            billBan.setStaff(null);
         }
-        else billBan.setStaff(null);
-
+    
+        // Customer validation
+        if (billBan.getCustomer() == null || billBan.getCustomer().getPhoneNumber() == null) {
+            throw new IllegalArgumentException("Customer phone number is required");
+        }
+        
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
-
-        if (customer.getId() == null) {
-            throw new IllegalArgumentException("Customer ID is null");
-        }
-            
+            .orElseThrow(() -> new IllegalArgumentException("Customer not found with phone number: " + 
+                billBan.getCustomer().getPhoneNumber()));
+    
         billBan.setCustomer(customer);
         billBan.setCreateAt(LocalDateTime.now());
         billBan.setNote(billBan.getNote());
@@ -91,17 +94,20 @@ public class BillBanService {
         }
         purchaseHistory.add(savedBillBan.getId());
         customer.setDanhSachSanPhamDaMua(purchaseHistory);
+        purchaseHistory.add(savedBillBan.getId());
+        customer.setDanhSachSanPhamDaMua(purchaseHistory);
         customerRepository.save(customer);
           // Cap nhat so luong con trong kho
         for (OrderDetail orderDetail : billBan.getOrderDetails()) {
             Product product = orderDetail.getProduct();
             product.setQuantity(product.getQuantity() - orderDetail.getQuantity());
             productRepository.save(product);
-        }
 
+        }
+    
         return savedBillBan;
     }
-
+    
      public List<BillBan> getAllBillBan() {
         return billBanRepository.findAll();
     } 
