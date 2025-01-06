@@ -3,7 +3,6 @@ package com.jelwery.morri.DTO;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,19 +17,23 @@ public class CustomerDeserializer extends JsonDeserializer<Customer>{
      @Autowired
     private CustomerRepository customerRepository;
 
+     
     @Override
     public Customer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String userId = p.getText();
+        // Get the customer ID from JSON
+        String customerId = p.getValueAsString();
         
-        Customer customer= customerRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("customer not found with id: " + userId));
-                if(customer == null){
-                    return new Customer();
-                }
-                else {
-                    return customer;
-                }
+        if (customerId == null || customerId.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            // Attempt to find the customer by ID
+            return customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+        } catch (Exception e) {
+            throw new IOException("Error deserializing Customer: " + e.getMessage(), e);
+        }
     }
-
 }
 

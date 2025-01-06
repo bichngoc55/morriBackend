@@ -39,7 +39,11 @@ public class ProductSeserializerForOne extends JsonDeserializer<Product> {
         
         if (node.isObject() && node.has("productId")) {
             productId = node.get("productId").asText();
-        } else {
+        } else if (node.isObject() && node.has("product")) 
+        {
+            productId = node.get("product").asText();
+        }
+         else {
             throw new IllegalArgumentException("Expected object with productId field");
         }
         

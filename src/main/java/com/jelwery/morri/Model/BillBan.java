@@ -5,8 +5,6 @@ import java.util.ArrayList;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Reference;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
@@ -28,7 +26,7 @@ public class BillBan {
     private BillStatus status;
     private PaymentMethod paymentMethod;
     @DocumentReference
-    @JsonDeserialize(contentUsing = CustomerDeserializer.class)
+    @JsonDeserialize(using = CustomerDeserializer.class)
     private Customer customer;
     @JsonDeserialize(contentUsing = OrderDetailDeserializer.class)
     private ArrayList<OrderDetail> orderDetails;

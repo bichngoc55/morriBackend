@@ -18,7 +18,6 @@ public class OrderDetail {
     private String ID;
      @DocumentReference
          @JsonDeserialize(contentUsing = ProductSeserializerForOne.class)
-
         private Product product;
         private int quantity;
         private double unitPrice;

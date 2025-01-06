@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jelwery.morri.DTO.CustomerDeserializer;
 import com.jelwery.morri.DTO.ProductBoughtFromCustomerDeserializer;
-import com.jelwery.morri.DTO.ProductDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
 
 import lombok.Data;
