@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SalaryDTO {
-
-    private LocalDateTime salaryReceiveDate; 
     private Double baseSalary;
-    private Double hourlyRate =20.000;
-    private Double commissionRate=0.0 ;
+    private Double commissionRate;
+    private LocalDateTime salaryReceiveDate;
 }

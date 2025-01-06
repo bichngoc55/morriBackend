@@ -20,7 +20,8 @@ import com.jelwery.morri.Model.Absence;
 import com.jelwery.morri.Model.Attendance;
 import com.jelwery.morri.Model.AttendanceRecord; 
 import com.jelwery.morri.Service.AttendanceService; 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")  
+
 @RestController
 @RequestMapping("/attendance") 
 public class AttendanceController {
