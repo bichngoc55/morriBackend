@@ -247,16 +247,14 @@ public class SalaryService {
     public Salary deleteBonusPenaltyRecord(String salaryId, String recordId) {
         Salary salary = salaryRepository.findById(salaryId)
             .orElseThrow(() -> new ResourceNotFoundException("Salary not found"));
-        
-        // Remove the bonus/penalty record
+         
         boolean recordRemoved = salary.getBonusRecords().removeIf(record -> record.getId().equals(recordId));
         
         if (!recordRemoved) {
             throw new ResourceNotFoundException("Bonus/Penalty record not found");
         }
         bonusPenaltyRecordRepository.deleteById(recordId);
-
-        // Recalculate salary
+ 
         recalculateSalary(salary);
         
         return salaryRepository.save(salary);
