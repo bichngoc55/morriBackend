@@ -23,7 +23,7 @@ public class Salary {
     private String id; 
     @DocumentReference
     @JsonDeserialize(contentUsing = UserDeserializer.class)
-    private String employeeId;  
+    private User employeeId;  
 
     private LocalDateTime salaryReceiveDate;
  

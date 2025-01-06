@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.SalaryDTO;
 import com.jelwery.morri.Model.BonusPenaltyRecord;
 import com.jelwery.morri.Model.Salary;
 import com.jelwery.morri.Service.SalaryService;
@@ -30,13 +31,31 @@ public class SalaryController {
     public ResponseEntity<Salary> calculateMonthlySalary(
             @PathVariable String employeeId,
             @RequestParam int year,
-            @RequestParam int month , Salary salaryDTO) {
-        Salary salary = salaryService.calculateMonthlySalary(employeeId, year, month);
-        // them salary DTO nua 
-        //  product completed
+            @RequestParam int month , @RequestBody SalaryDTO salaryDTO) {
+        Salary salary = salaryService.calculateMonthlySalary(employeeId, year, month, salaryDTO); 
         return ResponseEntity.ok(salary);
     }
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<List<Salary>> getSalariesByEmployeeId(@PathVariable String employeeId) {
+        List<Salary> salaries = salaryService.getSalariesByEmployeeId(employeeId);
+        return ResponseEntity.ok(salaries);
+    }
+    @PutMapping("/{salaryId}")
+    public ResponseEntity<Salary> updateSalaryDetails(
+            @PathVariable String salaryId,
+            @RequestBody SalaryDTO salaryDTO) {
+        Salary updatedSalary = salaryService.updateSalaryDetails(salaryId, salaryDTO);
+        return ResponseEntity.ok(updatedSalary);
+    }
     
+    @PutMapping("/{salaryId}/bonus-penalty/{recordId}")
+    public ResponseEntity<Salary> updateBonusPenaltyRecord(
+            @PathVariable String salaryId,
+            @PathVariable String recordId,
+            @RequestBody BonusPenaltyRecord record) {
+        Salary updatedSalary = salaryService.updateBonusPenaltyRecord(salaryId, recordId, record);
+        return ResponseEntity.ok(updatedSalary);
+    }
     @PostMapping("/{salaryId}/bonus-penalty")
     public ResponseEntity<Salary> addBonusPenaltyRecord(
             @PathVariable String salaryId,
