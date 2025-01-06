@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -16,7 +17,7 @@ public class Customer {
     private String id;
     private String name;
     private GENDER gioiTinh;
-//    @Indexed(unique=true)
+   @Indexed(unique=true)
     private String phoneNumber;
     private Date dateOfBirth;
     private ROLE role = ROLE.CUSTOMER;

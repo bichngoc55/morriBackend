@@ -38,25 +38,22 @@ public class BillBanService {
     private OrderDetailRepository orderDetailRepository;
    
     public BillBan createBillBan(BillBan billBan) {
-        // Staff validation
-        if (billBan.getStaff() != null && billBan.getStaff().getEmail() != null) {
+        if (billBan.getStaff() != null) {
             User staff = userRepository.findByEmail(billBan.getStaff().getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Staff not found with email: " + billBan.getStaff().getEmail()));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid staff"));
             billBan.setStaff(staff);
-        } else {
-            billBan.setStaff(null);
         }
-    
-        // Customer validation
-        if (billBan.getCustomer() == null || billBan.getCustomer().getPhoneNumber() == null) {
-            throw new IllegalArgumentException("Customer phone number is required");
-        }
-        
+        else billBan.setStaff(null);
+
         Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
-            .orElseThrow(() -> new IllegalArgumentException("Customer not found with phone number: " + 
-                billBan.getCustomer().getPhoneNumber()));
-    
+                .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
+
+        if (customer.getId() == null) {
+            throw new IllegalArgumentException("Customer ID is null");
+        }
+
         billBan.setCustomer(customer);
+        
         billBan.setCreateAt(LocalDateTime.now());
         billBan.setNote(billBan.getNote());
         billBan.setAdditionalCharge(billBan.getAdditionalCharge() != null ? billBan.getAdditionalCharge() : 0.0);
