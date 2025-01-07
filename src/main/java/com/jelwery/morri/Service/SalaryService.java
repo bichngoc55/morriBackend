@@ -180,6 +180,8 @@ public class SalaryService {
     public Salary addBonusPenaltyRecord(String salaryId, BonusPenaltyRecord record) {
         Salary salary = salaryRepository.findById(salaryId)
             .orElseThrow(() -> new ResourceNotFoundException("Salary record not found")); 
+        record.setDate(LocalDateTime.now());
+
          BonusPenaltyRecord savedRecord = bonusPenaltyRecordRepository.save(record);
          if (salary.getBonusRecords() == null) {
             salary.setBonusRecords(new ArrayList<>());

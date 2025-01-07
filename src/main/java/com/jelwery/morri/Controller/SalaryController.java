@@ -63,6 +63,13 @@ public class SalaryController {
         Salary updatedSalary = salaryService.addBonusPenaltyRecord(salaryId, record);
         return ResponseEntity.ok(updatedSalary);
     }
+    @DeleteMapping("/{salaryId}/bonus-penalty/{recordId}")
+    public ResponseEntity<Salary> deleteBonusPenaltyRecord(
+        @PathVariable String salaryId,
+        @PathVariable String recordId) {
+        Salary updatedSalary = salaryService.deleteBonusPenaltyRecord(salaryId, recordId);
+        return ResponseEntity.ok(updatedSalary);
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSalary(@PathVariable String id) {
         salaryService.deleteSalary(id);
