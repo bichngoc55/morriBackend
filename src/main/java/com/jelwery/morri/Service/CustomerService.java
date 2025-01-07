@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Repository.CustomerRepository;
+import com.mongodb.DuplicateKeyException;
 
 @Service
 public class CustomerService {
@@ -19,10 +20,20 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     //create
-    public Customer createCustomer(Customer customer) throws Exception { 
-        if(customer.getPassword()!=null)
-            customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-        return customerRepository.save(customer); 
+    public Customer createCustomer(Customer customer) throws Exception {
+        try {
+            if(customer.getPassword() != null) {
+                customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+            }
+            Optional<Customer> existing = customerRepository.findByPhoneNumber(customer.getPhoneNumber());
+            if(existing.isPresent()) {
+                throw new Exception("Số điện thoại đã tồn tại");
+            }
+            
+            return customerRepository.save(customer);
+        } catch (DuplicateKeyException e) {
+            throw new Exception("Số điện thoại đã tồn tại");
+        }
     }
     public Customer updateCustomer(String customerId, Customer customer) throws Exception {
         Optional<Customer> existingCustomerOpt = customerRepository.findById(customerId);

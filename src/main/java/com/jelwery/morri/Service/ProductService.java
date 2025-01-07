@@ -32,15 +32,22 @@ public class ProductService {
         if (productRepository.findByCode(product.getCode()).isPresent()) {
             throw new DuplicateResourceException("Product with code " + product.getCode() + " already exists");
         }
+        if (product.getSupplierId() != null) {
+            Optional<Supplier> supplier = supplierRespository.findById(product.getSupplierId().getId());
+            if (supplier.isPresent()) {
+                product.setSupplierId(supplier.get()); 
+            } else {
+                product.setSupplierId(null); 
+            }
+        } else {
+            product.setSupplierId(null);
+        }
     
-        Supplier supplier = supplierRespository.findById(product.getSupplierId().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID"));
-    
-        product.setSupplierId(supplier);
-    
+        // Lưu sản phẩm và trả về
         Product savedProduct = productRepository.save(product);
         return savedProduct;
     }
+    
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     } 
@@ -80,6 +87,10 @@ public class ProductService {
 
         if (updatedProduct.getDescription() != null) {
             existingProduct.setDescription(updatedProduct.getDescription());
+        }
+
+        if (updatedProduct.getMaterial() != null) {
+            existingProduct.setMaterial(updatedProduct.getMaterial());
         }
 
         if (updatedProduct.getCostPrice() != null) {

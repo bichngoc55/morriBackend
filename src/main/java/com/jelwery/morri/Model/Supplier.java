@@ -1,6 +1,7 @@
 package com.jelwery.morri.Model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class Supplier {
     // @Indexed(unique = true)
     private String supplierName;
     private String supplierAddress;
+    @Indexed(unique = true)
     private String supplierPhone;
      // tui note o day li do k cho them list inventory vao vi ca 2 th deu tro vao nhau
 }

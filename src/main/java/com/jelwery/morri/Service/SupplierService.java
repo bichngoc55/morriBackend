@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jelwery.morri.Model.Supplier;
 import com.jelwery.morri.Repository.SupplierRespository;
+import com.mongodb.DuplicateKeyException;
 @Service
 public class SupplierService {
     @Autowired
@@ -16,7 +17,11 @@ public class SupplierService {
 
     public Supplier createSupplier(Supplier supplier) throws Exception {
 //        if() check qq j do
-        return supplierRespository.save(supplier);
+        try{
+            return supplierRespository.save(supplier);
+        }catch (DuplicateKeyException e) {
+            throw new Exception("Số điện thoại đã tồn tại");
+        }
     }
     public List<Supplier> getAllSupplier(){
         return supplierRespository.findAll();

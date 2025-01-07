@@ -147,6 +147,9 @@ public class InventoryService {
         if (inventoryDetails.getName() != null) {
             existingInventory.setName(inventoryDetails.getName());
         }
+        if (inventoryDetails.getNgayNhapKho() != null) {
+            existingInventory.setNgayNhapKho(inventoryDetails.getNgayNhapKho());
+        }
         if (inventoryDetails.getQuantity() > 0) {
             existingInventory.setQuantity(inventoryDetails.getQuantity());
         }

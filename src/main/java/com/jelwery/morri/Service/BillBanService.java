@@ -45,15 +45,15 @@ public class BillBanService {
         }
         else billBan.setStaff(null);
 
-        Customer customer = customerRepository.findByPhoneNumber(billBan.getCustomer().getPhoneNumber())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid customer: "));
+        Customer customer = customerRepository.findById(billBan.getCustomer().getId())
+        .orElseThrow(() -> new IllegalArgumentException("Invalid customer ID"));
+
+        billBan.setCustomer(customer);
 
         if (customer.getId() == null) {
             throw new IllegalArgumentException("Customer ID is null");
         }
 
-        billBan.setCustomer(customer);
-        
         billBan.setCreateAt(LocalDateTime.now());
         billBan.setNote(billBan.getNote());
         billBan.setAdditionalCharge(billBan.getAdditionalCharge() != null ? billBan.getAdditionalCharge() : 0.0);
