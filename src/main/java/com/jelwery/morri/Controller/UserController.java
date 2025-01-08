@@ -19,15 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Service.UserService;
+ 
+@RestController
 @CrossOrigin(origins = "http://localhost:3000")  
 
-@RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
  
     @PostMapping("/create")
+    // @CrossOrigin(origins = "*")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
@@ -61,5 +63,17 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> updatePassword(
+        @PathVariable String id,
+        @RequestBody PasswordUpdateRequest request) {
+        try {
+            userService.updatePassword(id, request.getNewPassword());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
