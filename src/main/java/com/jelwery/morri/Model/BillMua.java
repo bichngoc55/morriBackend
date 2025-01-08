@@ -31,7 +31,7 @@ public class BillMua {
     private String cccd;
     private Integer status;
     @DocumentReference
-    @JsonDeserialize(contentUsing = ProductBoughtFromCustomerDeserializer.class)
+    @JsonDeserialize(contentUsing = ProductBoughtFromCustomerDeserializer.class)  
     private ArrayList<ProductBoughtFromCustomer> dsSanPhamDaMua;
     @DocumentReference
     @JsonDeserialize(contentUsing = UserDeserializer.class)
