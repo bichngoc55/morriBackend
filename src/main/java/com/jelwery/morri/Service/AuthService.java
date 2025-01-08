@@ -32,7 +32,9 @@ public class AuthService {
     @Autowired
     private JavaMailSender mailSender;
 
-    private final BCryptPasswordEncoder passwordEncoder =new BCryptPasswordEncoder()  ;
+    // private final BCryptPasswordEncoder passwordEncoder =new BCryptPasswordEncoder()  ;
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
 
     public User reegisterUser(User user) throws Exception {

@@ -15,7 +15,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
  
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;    
  
     public User createUser(User user) { 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -67,4 +68,15 @@ public class UserService {
         }
     }
 
+    public void updatePassword(String id, String newPassword) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            user.setPassword(encodedPassword);
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
 }
