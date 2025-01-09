@@ -77,9 +77,7 @@ public class BillBanService {
             // orderDetail.setSubtotal(orderDetail.getQuantity() * orderDetail.getUnitPrice());
             OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
             savedOrderDetails.add(savedOrderDetail);
-             
-           
-        }
+                     }
         // 
         billBan.setOrderDetails(savedOrderDetails);
         billBan.setTotalPrice(billBan.getTotalPrice());

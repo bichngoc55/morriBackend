@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.jelwery.morri.Service.DichVuService;
 import com.jelwery.morri.Model.Service;
  
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
+
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @CrossOrigin(origins = "http://localhost:3000")  
 @RequestMapping("/service")
@@ -46,8 +50,8 @@ public class ServiceController {
     }
 
     @PutMapping("/{id}")
-    public Service updateService(@PathVariable String id, @RequestBody Service service) {
-        return dichVuService.updateService(id, service);
+    public Service updateService(@PathVariable String id,   @RequestBody Map<String, Object> updates) {
+        return dichVuService.updateService(id, updates);
     }
 
     @DeleteMapping("/{id}")
