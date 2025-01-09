@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,7 +32,7 @@ public class SecurityConfig {
                         // .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
                         .requestMatchers("/sales/**").hasAnyRole("ADMIN", "SALE_STAFF")
                         .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**",
-                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**","/billMua/**","/productMuaLai/**","/cart/**", "/termAndCondition/**").permitAll()
+                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**","/billMua/**","/productMuaLai/**","/cart/**", "/termAndCondition/**", "/voucher/**").permitAll()
 
                         .anyRequest().authenticated()
                 ) 

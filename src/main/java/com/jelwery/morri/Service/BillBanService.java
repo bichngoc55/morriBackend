@@ -58,7 +58,7 @@ public class BillBanService {
         billBan.setNote(billBan.getNote());
         billBan.setAdditionalCharge(billBan.getAdditionalCharge() != null ? billBan.getAdditionalCharge() : 0.0);
  
-        double totalPrice = 0.0;
+       
         ArrayList<OrderDetail> savedOrderDetails = new ArrayList<>();
 
         for (OrderDetail orderDetail : billBan.getOrderDetails()) {
@@ -78,11 +78,11 @@ public class BillBanService {
             OrderDetail savedOrderDetail = orderDetailRepository.save(orderDetail);
             savedOrderDetails.add(savedOrderDetail);
              
-            totalPrice += orderDetail.getSubtotal();
+           
         }
         // 
         billBan.setOrderDetails(savedOrderDetails);
-        billBan.setTotalPrice(totalPrice + billBan.getAdditionalCharge());
+        billBan.setTotalPrice(billBan.getTotalPrice());
         BillBan savedBillBan = billBanRepository.save(billBan);
 
         ArrayList<String> purchaseHistory = customer.getDanhSachSanPhamDaMua();
