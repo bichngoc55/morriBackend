@@ -96,6 +96,7 @@ public class AttendanceService {
 
     @Transactional
     public Attendance reportAbsence(Absence absence) {
+        System.out.println("ehehhe : "+ absence);
         User employee = userRepository.findById(absence.getEmployee().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
@@ -147,6 +148,89 @@ public class AttendanceService {
         return attendanceRepository.findByEmployeeIdAndYearAndMonth(employee, year, month)
                 .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
     }
+    @Transactional
+public AttendanceRecord updateAttendanceRecord(String recordId, AttendanceRecord updateRequest) {
+    AttendanceRecord record = attendanceRecordRepository.findById(recordId)
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
+     
+    if (updateRequest.getNotes() != null) {
+        record.setNotes(updateRequest.getNotes());
+    }
+    if (updateRequest.getCheckIn() != null) {
+        record.setCheckIn(updateRequest.getCheckIn()); 
+        LocalTime standardStartTime = LocalTime.of(9, 0);
+        if (record.getCheckIn().toLocalTime().isAfter(standardStartTime.plusMinutes(15))) {
+            record.setStatus(AttendanceStatus.LATE);
+        } else {
+            record.setStatus(AttendanceStatus.PRESENT);
+        }
+    }
+    if (updateRequest.getCheckOut() != null) {
+        record.setCheckOut(updateRequest.getCheckOut()); 
+        if (record.getCheckIn() != null) {
+            double hours = ChronoUnit.MINUTES.between(record.getCheckIn(), record.getCheckOut()) / 60.0;
+            record.setWorkingHours(hours);
+        }
+    }
+
+    AttendanceRecord updatedRecord = attendanceRecordRepository.save(record);
+     
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            record.getEmployee(),
+            record.getDate().getYear(),
+            record.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found"));
     
+    updateAttendanceStats(attendance);
+    attendanceRepository.save(attendance);
+    
+    return updatedRecord;
+}
+
+@Transactional
+public Absence updateAbsence(String absenceId, Absence updateRequest) {
+    Absence absence = absenceRepository.findById(absenceId)
+            .orElseThrow(() -> new ResourceNotFoundException("Absence record not found"));
+     
+    if (updateRequest.getReason() != null) {
+        absence.setReason(updateRequest.getReason());
+    }
+    if (updateRequest.getStatus() != null) {
+        absence.setStatus(updateRequest.getStatus());
+    }
+    
+    return absenceRepository.save(absence);
+}
+@Transactional
+public void deleteAttendanceRecord(String recordId) {
+    AttendanceRecord record = attendanceRecordRepository.findById(recordId)
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found")); 
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            record.getEmployee(),
+            record.getDate().getYear(),
+            record.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found")); 
+    attendance.getAttendanceRecords().removeIf(r -> r.getId().equals(recordId));
+     
+    updateAttendanceStats(attendance); 
+    attendanceRepository.save(attendance);
+    attendanceRecordRepository.deleteById(recordId);
+}
+
+@Transactional
+public void deleteAbsence(String absenceId) {
+    Absence absence = absenceRepository.findById(absenceId)
+            .orElseThrow(() -> new ResourceNotFoundException("Absence record not found"));
+             
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            absence.getEmployee(),
+            absence.getDate().getYear(),
+            absence.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found")); 
+    attendance.getAbsences().removeIf(a -> a.getId().equals(absenceId)); 
+    updateAttendanceStats(attendance); 
+    attendanceRepository.save(attendance);
+    absenceRepository.deleteById(absenceId);
+}
  
 }

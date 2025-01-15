@@ -47,11 +47,20 @@ public class CustomerService {
             if (customer.getEmail() != null) {
                 existingCustomer.setEmail(customer.getEmail());
             }
-            if (customer.getDanhSachSanPhamDaMua() != null) {
-                existingCustomer.setPhoneNumber(customer.getPhoneNumber());
-            }
             if (customer.getPhoneNumber() != null) {
                 existingCustomer.setPhoneNumber(customer.getPhoneNumber());
+            }
+            if (customer.getGioiTinh() != null) {
+                existingCustomer.setGioiTinh(customer.getGioiTinh());
+            }
+            if (customer.getDateOfBirth() != null) {
+                existingCustomer.setDateOfBirth(customer.getDateOfBirth());
+            }
+            if (customer.getNgayDangKyThanhVien() != null) {
+                existingCustomer.setNgayDangKyThanhVien(customer.getNgayDangKyThanhVien());
+            }
+            if (customer.getDanhSachSanPhamDaMua() != null) {
+                existingCustomer.setDanhSachSanPhamDaMua(customer.getDanhSachSanPhamDaMua());
             }
 
             return customerRepository.save(existingCustomer);
