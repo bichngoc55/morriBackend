@@ -235,6 +235,7 @@ public class SalaryService {
             break;
         }
     }
+    calculateBonusAndPenalties(salary);
     
     if (!recordFound) {
         throw new ResourceNotFoundException("Bonus/Penalty record not found in salary");
