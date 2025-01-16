@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jelwery.morri.Model.Voucher;
 import com.jelwery.morri.Service.VoucherService;
-@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
