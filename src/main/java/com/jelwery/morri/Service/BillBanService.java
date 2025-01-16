@@ -67,9 +67,8 @@ public class BillBanService {
                         orderDetail.getProduct().getId()));
             
             if (orderDetail.getQuantity() > product.getQuantity()) {
-                throw new IllegalArgumentException("Insufficient inventory for product: " + 
-                    product.getName() + ". Available: " + product.getQuantity() + 
-                    ", Requested: " + orderDetail.getQuantity());
+                throw new IllegalArgumentException("Không đủ số lượng để bán: " + 
+                    product.getName() + ". Kho còn lại: " + product.getQuantity());
             }
             
             // orderDetail.setProduct(product);
