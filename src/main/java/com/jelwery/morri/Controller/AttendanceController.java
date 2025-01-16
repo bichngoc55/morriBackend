@@ -32,6 +32,7 @@ public class AttendanceController {
     public ResponseEntity<?> checkIn(@RequestBody AttendanceRecord record) {
         return ResponseEntity.ok(attendanceService.checkIn(record));
     }
+    
 
     @PostMapping("/check-out")
     public ResponseEntity<?> checkOut(@RequestBody AttendanceRecord record) {
@@ -48,6 +49,32 @@ public class AttendanceController {
 
     @PostMapping("/absence")
     public ResponseEntity<?> reportAbsence(@RequestBody Absence absence) {
+        System.out.println("ehehhe 2: "+ absence);
+
         return ResponseEntity.ok(attendanceService.reportAbsence(absence));
     }
+    @PatchMapping("/record/{recordId}")
+public ResponseEntity<?> updateAttendanceRecord(
+        @PathVariable String recordId,
+        @RequestBody AttendanceRecord updateRequest) {
+    return ResponseEntity.ok(attendanceService.updateAttendanceRecord(recordId, updateRequest));
+}
+
+@PatchMapping("/absence/{absenceId}")
+public ResponseEntity<?> updateAbsence(
+        @PathVariable String absenceId,
+        @RequestBody Absence updateRequest) {
+    return ResponseEntity.ok(attendanceService.updateAbsence(absenceId, updateRequest));
+}
+@DeleteMapping("/record/{recordId}")
+public ResponseEntity<?> deleteAttendanceRecord(@PathVariable String recordId) {
+    attendanceService.deleteAttendanceRecord(recordId);
+    return ResponseEntity.ok().build();
+}
+
+@DeleteMapping("/absence/{absenceId}")
+public ResponseEntity<?> deleteAbsence(@PathVariable String absenceId) {
+    attendanceService.deleteAbsence(absenceId);
+    return ResponseEntity.ok().build();
+}
 }
