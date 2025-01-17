@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.UserDTO;
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Service.UserService;
  
@@ -30,7 +31,7 @@ public class UserController {
  
     @PostMapping("/create")
     // @CrossOrigin(origins = "*")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> createUser( @RequestBody UserDTO user) {
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
@@ -54,7 +55,7 @@ public class UserController {
     }
  
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @Valid @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody UserDTO user) {
         User updatedUser = userService.updateUser(id, user);
         return ResponseEntity.ok(updatedUser);
     }

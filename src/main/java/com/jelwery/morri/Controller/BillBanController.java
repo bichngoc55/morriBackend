@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,10 @@ public class BillBanController {
     public BillBan updateBillBan(@PathVariable("billBanId") String billBanId, @RequestBody BillBan updatedBillBan) {
         return billBanService.updateBillBan(billBanId, updatedBillBan);
     }
+    @GetMapping("/customer/{customerId}")
+public List<BillBan> getBillBanByCustomerId(@PathVariable String customerId) {
+    return billBanService.getBillBanByCustomerId(customerId);
+}
      @GetMapping("/today")
     public List<BillBan> getToday() {
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
@@ -93,6 +98,18 @@ public class BillBanController {
             return ResponseEntity.ok().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+      @PutMapping("/cancel/{billBanId}")
+    public ResponseEntity<BillBan> cancelBillBan(@PathVariable String billBanId) {
+        try {
+            System.out.print(billBanId);
+            BillBan cancelledBill = billBanService.updateBillBanStatus(billBanId, BillStatus.CANCELLED);
+            return ResponseEntity.ok(cancelledBill);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
