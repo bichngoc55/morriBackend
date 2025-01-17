@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -26,14 +25,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/service/**", "/jewelry/**", "/billBan/**").permitAll()
+                        .requestMatchers("/auth/**", "/service/**", "/jewelry/**", "/billBan/**","/inventory/**").permitAll()
                         .requestMatchers("/customer/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/supplier/**").permitAll()
-                        .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
+                        // .requestMatchers("/inventory/**").hasAnyRole("ADMIN", "INVENTORY_STAFF")
                         .requestMatchers("/sales/**").hasAnyRole("ADMIN", "SALE_STAFF")
                         .requestMatchers("/phieuDichVu/**","/schedule/**", "/attendance/**","/user/**",
-                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**").permitAll()
+                        "/salary/**","/bonusPenalty/**", "/absence/**", "/attendance-record/**","/billMua/**","/productMuaLai/**","/cart/**", "/termAndCondition/**", "/voucher/**").permitAll()
 
                         .anyRequest().authenticated()
                 ) 
@@ -45,7 +44,7 @@ public class SecurityConfig {
         return http.build();
     }
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     @Bean

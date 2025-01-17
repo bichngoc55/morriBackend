@@ -23,9 +23,7 @@ public class Salary {
     private String id; 
     @DocumentReference
     @JsonDeserialize(contentUsing = UserDeserializer.class)
-    private String employeeId; 
-
-    private SalaryType salaryType;
+    private User employeeId;  
 
     private LocalDateTime salaryReceiveDate;
  
@@ -39,14 +37,12 @@ public class Salary {
     @JsonDeserialize(contentUsing = BonusPenaltyRecordDeserializer.class)
     private List<BonusPenaltyRecord> bonusRecords;
     private Double totalBonusAndPenalty;
-
+    private Double salaryCommissionBased;
+    private Double salaryHourlyBased;
+    private Double salaryDailyBased;
     private Double calculatedBasePay;
     private Double totalSalary;
     @CreatedDate
     private LocalDateTime createdAt;
-    public enum SalaryType {
-        COMMISSION_BASED,
-        HOURLY_BASED,
-        DAILY_BASED
-    } 
+ 
 }

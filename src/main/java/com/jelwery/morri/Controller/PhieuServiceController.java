@@ -3,21 +3,21 @@ package com.jelwery.morri.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.PhieuServiceDTO;
 import com.jelwery.morri.Model.PhieuService;
 import com.jelwery.morri.Service.PhieuDichVuService;
+@CrossOrigin(origins = "http://localhost:3000")  
 
 @RestController
 @RequestMapping("/phieuDichVu") 
@@ -48,34 +48,27 @@ public class PhieuServiceController {
         return ResponseEntity.ok(createdPhieuService);
     }
 
-    @PutMapping("/{id}")
+    // @PutMapping("/{id}")
+    // public ResponseEntity<PhieuService> updatePhieuService(
+    //         @PathVariable String id,
+    //         @RequestBody PhieuService phieuServiceDetails) {
+    //     PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDetails);
+    //     return ResponseEntity.ok(updatedPhieuService);
+    // }
+
+     @PutMapping("/{id}")
     public ResponseEntity<PhieuService> updatePhieuService(
             @PathVariable String id,
-            @RequestBody PhieuService phieuServiceDetails) {
-        PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDetails);
+            @RequestBody PhieuServiceDTO phieuServiceDTO) {
+        PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDTO);
         return ResponseEntity.ok(updatedPhieuService);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePhieuService(@PathVariable String id) {
         phieuServiceService.deletePhieuService(id);
         return ResponseEntity.ok().build();
     }
 
-    // @GetMapping("/staff-lap-hoa-don/{staffId}")
-    // public List<PhieuService> getPhieuServicesByStaffLapHoaDon(@PathVariable String staffId) {
-    //     return phieuServiceService.getPhieuServicesByStaffLapHoaDon(staffId);
-    // }
-
-    // @GetMapping("/staff-lam-dich-vu/{staffId}")
-    // public List<PhieuService> getPhieuServicesByStaffLamDichVu(@PathVariable String staffId) {
-    //     return phieuServiceService.getPhieuServicesByStaffLamDichVu(staffId);
-    // }
-
-    @GetMapping("/status/{status}")
-    public List<PhieuService> getPhieuServicesByStatus(
-            @PathVariable PhieuService.DELIVERYSTATUS status) {
-        return phieuServiceService.getPhieuServicesByStatus(status);
-    }
+    
 
 }

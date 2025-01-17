@@ -2,18 +2,24 @@ package com.jelwery.morri.Service;
  
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.Absence;
+import com.jelwery.morri.Model.Absence.AbsenceStatus;
 import com.jelwery.morri.Model.Attendance;
 import com.jelwery.morri.Model.AttendanceRecord;
 import com.jelwery.morri.Model.AttendanceRecord.AttendanceStatus;
+import com.jelwery.morri.Model.AttendanceRecord.CHECKTYPE;
 import com.jelwery.morri.Model.Schedule;
 import com.jelwery.morri.Model.User;
 import com.jelwery.morri.Repository.AbsenceRepository;
@@ -32,211 +38,199 @@ public class AttendanceService {
     private UserRepository userRepository;
     @Autowired
     private AttendanceRecordRepository attendanceRecordRepository;
-  
-    @Autowired
-    private ScheduleRepository scheduleRepository;  
 
-    public AttendanceRecord validateAttendanceWithSchedule(String employeeId, AttendanceRecord record) {
-        LocalDateTime recordDate = record.getDate();
-        Schedule schedule = scheduleRepository.findByWorkDate(
-            recordDate.toLocalDate().atStartOfDay())
-            .orElseThrow(() -> new ResourceNotFoundException("No schedule found for date: " + recordDate));
-
-        boolean isInMorningShift = schedule.getMorningShifts().stream()
-            .anyMatch(user -> user.getId().equals(employeeId));
-        boolean isInAfternoonShift = schedule.getAfternoonShifts().stream()
-            .anyMatch(user -> user.getId().equals(employeeId));
-
-        if (!isInMorningShift && !isInAfternoonShift) {
-            throw new IllegalStateException("Employee is not scheduled to work on this date");
-        }
+    @Transactional
+    public Attendance checkIn(AttendanceRecord record) {
+        User employee = userRepository.findById(record.getEmployee().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        
+        LocalDateTime now = LocalDateTime.now();
+        record.setDate(now);
+        record.setCheckIn(now);
+        record.setCheckType(CHECKTYPE.IN);
+        record.setEmployee(employee);
  
-        LocalTime checkInTime = record.getCheckIn().toLocalTime();
-        LocalTime checkOutTime = record.getCheckOut().toLocalTime();
-         
-        LocalTime lateThreshold = schedule.getStartTime().plusMinutes(15);
+        LocalTime standardStartTime = LocalTime.of(9, 0);
+        
+        if (now.toLocalTime().isAfter(standardStartTime.plusMinutes(15))) {
+            record.setStatus(AttendanceStatus.LATE);
+        } else {
+            record.setStatus(AttendanceStatus.PRESENT);
+        } 
+        Attendance attendance = getOrCreateAttendance(employee, now.getYear(), now.getMonthValue());
+        
+        record = attendanceRecordRepository.save(record);
+        attendance.getAttendanceRecords().add(record);
+        updateAttendanceStats(attendance);
+        
+        return attendanceRepository.save(attendance);
+    }
 
-        if (checkInTime.isAfter(lateThreshold)) {
+    @Transactional
+    public Attendance checkOut(AttendanceRecord record) {
+        User employee = userRepository.findById(record.getEmployee().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        LocalDateTime now = LocalDateTime.now();
+        record.setCheckOut(now);
+        record.setCheckType(CHECKTYPE.OUT);
+        record.setEmployee(employee);
+
+        Attendance attendance = getOrCreateAttendance(employee, now.getYear(), now.getMonthValue());
+         
+        AttendanceRecord checkInRecord = attendance.getAttendanceRecords().stream()
+                .filter(r -> r.getCheckType() == CHECKTYPE.IN && 
+                        r.getDate().toLocalDate().equals(now.toLocalDate()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No check-in record found"));
+ 
+        double hours = ChronoUnit.MINUTES.between(checkInRecord.getCheckIn(), now) / 60.0;
+        record.setWorkingHours(hours);
+
+        record = attendanceRecordRepository.save(record);
+        attendance.getAttendanceRecords().add(record);
+        updateAttendanceStats(attendance);
+        
+        return attendanceRepository.save(attendance);
+    }
+
+    @Transactional
+    public Attendance reportAbsence(Absence absence) {
+        System.out.println("ehehhe : "+ absence);
+        User employee = userRepository.findById(absence.getEmployee().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        absence.setStatus(AbsenceStatus.PENDING);
+        absence = absenceRepository.save(absence);
+
+        Attendance attendance = getOrCreateAttendance(employee, 
+                absence.getDate().getYear(), 
+                absence.getDate().getMonthValue());
+        
+        attendance.getAbsences().add(absence);
+        updateAttendanceStats(attendance);
+        return attendanceRepository.save(attendance);
+    }
+
+    private Attendance getOrCreateAttendance(User employee, int year, int month) {
+        return attendanceRepository.findByEmployeeIdAndYearAndMonth(employee, year, month)
+                .orElseGet(() -> {
+                    Attendance newAttendance = new Attendance();
+                    newAttendance.setEmployeeId(employee);
+                    newAttendance.setYear(year);
+                    newAttendance.setMonth(month);
+                    newAttendance.setAttendanceRecords(new ArrayList<>());
+                    newAttendance.setAbsences(new ArrayList<>());
+                    newAttendance.setWorkingDays(20);  
+                    return attendanceRepository.save(newAttendance);
+                });
+    }
+
+    private void updateAttendanceStats(Attendance attendance) { 
+        attendance.setTotalWorkingHours(
+            attendance.getAttendanceRecords().stream()
+                .filter(r -> r.getWorkingHours() != null)
+                .mapToDouble(AttendanceRecord::getWorkingHours)
+                .sum()
+        );
+ 
+        attendance.setTotalAbsences(attendance.getAbsences().size());
+ 
+        attendance.setTotalLateArrivals((int) attendance.getAttendanceRecords().stream()
+                .filter(r -> r.getStatus() == AttendanceStatus.LATE)
+                .count());
+    }
+
+    public Attendance getMonthlyAttendance(String employeeId, int year, int month) {
+        User employee = userRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        
+        return attendanceRepository.findByEmployeeIdAndYearAndMonth(employee, year, month)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
+    }
+    @Transactional
+public AttendanceRecord updateAttendanceRecord(String recordId, AttendanceRecord updateRequest) {
+    AttendanceRecord record = attendanceRecordRepository.findById(recordId)
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found"));
+     
+    if (updateRequest.getNotes() != null) {
+        record.setNotes(updateRequest.getNotes());
+    }
+    if (updateRequest.getCheckIn() != null) {
+        record.setCheckIn(updateRequest.getCheckIn()); 
+        LocalTime standardStartTime = LocalTime.of(9, 0);
+        if (record.getCheckIn().toLocalTime().isAfter(standardStartTime.plusMinutes(15))) {
             record.setStatus(AttendanceStatus.LATE);
         } else {
             record.setStatus(AttendanceStatus.PRESENT);
         }
- 
-        // double workingHours = calculateWorkingHours(
-        //     record.getCheckIn(),
-        //     record.getCheckOut(),
-        //     schedule.getStartTime(),
-        //     schedule.getEndTime()
-        // );
-        // record.setWorkingHours(workingHours);
-
-        return record;
     }
-   public Attendance recordAttendance(String employeeId, Attendance record) { 
-        User employee = userRepository.findById(employeeId)
-            .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
-         
-        Optional<Attendance> existingAttendance = attendanceRepository
-            .findByEmployeeIdAndYearAndMonth(employeeId, record.getYear(), record.getMonth());
-        
-        Attendance attendance;
-        if (existingAttendance.isPresent()) { 
-            attendance = existingAttendance.get();
-            updateAttendanceRecord(attendance, record);
-        } else { 
-            attendance = new Attendance();
-            attendance.setEmployeeId(employee);
-            attendance.setYear(record.getYear());
-            attendance.setMonth(record.getMonth());
-            attendance.setAttendanceRecords(new ArrayList<>());
-            attendance.setAbsences(new ArrayList<>());
-            updateAttendanceRecord(attendance, record);
+    if (updateRequest.getCheckOut() != null) {
+        record.setCheckOut(updateRequest.getCheckOut()); 
+        if (record.getCheckIn() != null) {
+            double hours = ChronoUnit.MINUTES.between(record.getCheckIn(), record.getCheckOut()) / 60.0;
+            record.setWorkingHours(hours);
         }
-        
-        return attendanceRepository.save(attendance);
+    }
+
+    AttendanceRecord updatedRecord = attendanceRecordRepository.save(record);
+     
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            record.getEmployee(),
+            record.getDate().getYear(),
+            record.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found"));
+    
+    updateAttendanceStats(attendance);
+    attendanceRepository.save(attendance);
+    
+    return updatedRecord;
+}
+
+@Transactional
+public Absence updateAbsence(String absenceId, Absence updateRequest) {
+    Absence absence = absenceRepository.findById(absenceId)
+            .orElseThrow(() -> new ResourceNotFoundException("Absence record not found"));
+     
+    if (updateRequest.getReason() != null) {
+        absence.setReason(updateRequest.getReason());
+    }
+    if (updateRequest.getStatus() != null) {
+        absence.setStatus(updateRequest.getStatus());
     }
     
-    // public void updateAttendanceRecord(Attendance existing, Attendance newRecord) { 
-    //     if (newRecord.getAttendanceRecords() != null && !newRecord.getAttendanceRecords().isEmpty()) {
-    //         List<AttendanceRecord> validatedRecords = new ArrayList<>();
-            
-    //         for (AttendanceRecord recordRef : newRecord.getAttendanceRecords()) {
-    //             AttendanceRecord fullRecord = attendanceRecordRepository
-    //                 .findById(recordRef.getId())
-    //                 .orElseThrow(() -> new ResourceNotFoundException(
-    //                     "AttendanceRecord not found with ID: " + recordRef.getId()));
-    //             validatedRecords.add(fullRecord);
-    //         }
+    return absenceRepository.save(absence);
+}
+@Transactional
+public void deleteAttendanceRecord(String recordId) {
+    AttendanceRecord record = attendanceRecordRepository.findById(recordId)
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found")); 
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            record.getEmployee(),
+            record.getDate().getYear(),
+            record.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found")); 
+    attendance.getAttendanceRecords().removeIf(r -> r.getId().equals(recordId));
+     
+    updateAttendanceStats(attendance); 
+    attendanceRepository.save(attendance);
+    attendanceRecordRepository.deleteById(recordId);
+}
+
+@Transactional
+public void deleteAbsence(String absenceId) {
+    Absence absence = absenceRepository.findById(absenceId)
+            .orElseThrow(() -> new ResourceNotFoundException("Absence record not found"));
              
-    //         if (existing.getAttendanceRecords() == null) {
-    //             existing.setAttendanceRecords(new ArrayList<>());
-    //         }
-    //         existing.getAttendanceRecords().addAll(validatedRecords);
-    //     } 
-    //     if (newRecord.getAbsences() != null && !newRecord.getAbsences().isEmpty()) {
-    //         List<Absence> validatedAbsences = new ArrayList<>();
-            
-    //         for (Absence absenceRef : newRecord.getAbsences()) {
-    //             Absence fullAbsence = absenceRepository
-    //                 .findById(absenceRef.getId())
-    //                 .orElseThrow(() -> new ResourceNotFoundException(
-    //                     "Absence not found with ID: " + absenceRef.getId()));
-    //             validatedAbsences.add(fullAbsence);
-    //         } 
-    //         if (existing.getAbsences() == null) {
-    //             existing.setAbsences(new ArrayList<>());
-    //         }
-    //         existing.getAbsences().addAll(validatedAbsences);
-    //     } 
-    //     updateAttendanceTotals(existing);
-    // }
-    public void updateAttendanceRecord(Attendance existing, Attendance newRecord) {
-        if (existing.getAttendanceRecords() == null) {
-            existing.setAttendanceRecords(new ArrayList<>());
-        }
-        
-        if (newRecord.getAttendanceRecords() != null && !newRecord.getAttendanceRecords().isEmpty()) {
-            List<AttendanceRecord> validatedRecords = new ArrayList<>();
-            
-            for (AttendanceRecord recordRef : newRecord.getAttendanceRecords()) {
-                AttendanceRecord fullRecord = attendanceRecordRepository
-                    .findById(recordRef.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                        "AttendanceRecord not found with ID: " + recordRef.getId()));
-                        
-                boolean exists = existing.getAttendanceRecords().stream()
-                    .anyMatch(existingRecord -> existingRecord.getId().equals(fullRecord.getId()));
-                        
-                if (!exists) {
-                    validatedRecords.add(fullRecord);
-                }
-            }
-            
-            existing.getAttendanceRecords().addAll(validatedRecords);
-        }
-    
-        if (newRecord.getAbsences() != null && !newRecord.getAbsences().isEmpty()) {
-            List<Absence> validatedAbsences = new ArrayList<>();
-            
-            for (Absence absenceRef : newRecord.getAbsences()) {
-                Absence fullAbsence = absenceRepository
-                    .findById(absenceRef.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                        "Absence not found with ID: " + absenceRef.getId()));
-                
-                boolean exists = existing.getAbsences().stream()
-                    .anyMatch(existingAbsence -> existingAbsence.getId().equals(fullAbsence.getId()));
-                    
-                if (!exists) {
-                    validatedAbsences.add(fullAbsence);
-                }
-            }
-            
-            existing.getAbsences().addAll(validatedAbsences);
-        }
-        updateAttendanceTotals(existing);
-    }
-    
-    
-    private void updateAttendanceTotals(Attendance attendance) {
-        if (attendance.getAttendanceRecords() == null) {
-            attendance.setTotalWorkingHours(0.0);
-            attendance.setTotalAbsences(0);
-            attendance.setTotalLateArrivals(0);
-            return;
-        }
-
-        double totalHours = attendance.getAttendanceRecords().stream()
-            .mapToDouble(AttendanceRecord::getWorkingHours)
-            .sum();
-
-        long totalAbsences = attendance.getAttendanceRecords().stream()
-            .filter(r -> r.getStatus() == AttendanceRecord.AttendanceStatus.ABSENT)
-            .count();
-
-        long totalLate = attendance.getAttendanceRecords().stream()
-            .filter(r -> r.getStatus() == AttendanceRecord.AttendanceStatus.LATE)
-            .count(); 
-        if (attendance.getAbsences() != null) {
-            totalAbsences += attendance.getAbsences().size();
-        }
-
-        attendance.setTotalWorkingHours(totalHours);
-        attendance.setTotalAbsences((int) totalAbsences);
-        attendance.setTotalLateArrivals((int) totalLate);
-    }
-
-    
-   
-    public Attendance getOrCreateAttendance(String employeeId, LocalDateTime date) {
-        validateEmployee(employeeId);
-        int year = date.getYear();
-        int month = date.getMonthValue();
-        User employee = userRepository.findById(employeeId)
-        .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
-        
-        return attendanceRepository
-            .findByEmployeeIdAndYearAndMonth(employeeId, year, month)
-            .stream()
-            .findFirst()
-            .orElseGet(() -> {
-                Attendance newAttendance = new Attendance();
-                newAttendance.setEmployeeId(employee);
-                newAttendance.setYear(year);
-                newAttendance.setMonth(month);
-                // newAttendance.setAttendanceRecords(new ArrayList<>());
-                // newAttendance.setAbsences(new ArrayList<>());
-                return attendanceRepository.save(newAttendance);   
-            });
-    }
-
-    
-
-    private void validateEmployee(String employeeId) {
-        if (!userRepository.existsById(employeeId)) {
-            throw new ResourceNotFoundException("Employee not found with ID: " + employeeId);
-        }
-    }
-    
+    Attendance attendance = attendanceRepository.findByEmployeeIdAndYearAndMonth(
+            absence.getEmployee(),
+            absence.getDate().getYear(),
+            absence.getDate().getMonthValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Attendance not found")); 
+    attendance.getAbsences().removeIf(a -> a.getId().equals(absenceId)); 
+    updateAttendanceStats(attendance); 
+    attendanceRepository.save(attendance);
+    absenceRepository.deleteById(absenceId);
+}
  
 }

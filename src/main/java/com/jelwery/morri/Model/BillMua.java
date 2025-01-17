@@ -8,6 +8,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.CustomerDeserializer;
+import com.jelwery.morri.DTO.ProductBoughtFromCustomerDeserializer;
+import com.jelwery.morri.DTO.UserDeserializer;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,13 +22,20 @@ import lombok.NoArgsConstructor;
 public class BillMua {
     @Id
     private String id;
-    private Double totalPrice;
-    private PaymentMethod paymentMethod;
+    private Double totalPrice; 
     @DocumentReference
+    @JsonDeserialize(contentUsing = CustomerDeserializer.class) 
     private Customer customerId;
-    private ArrayList<Product> dsSanPhamDaMua;
+    private String customerName;
+    private String SDT;
+    private String cccd;
+    private Integer status;
     @DocumentReference
+    @JsonDeserialize(contentUsing = ProductBoughtFromCustomerDeserializer.class)  
+    private ArrayList<ProductBoughtFromCustomer> dsSanPhamDaMua;
+    @DocumentReference
+    @JsonDeserialize(contentUsing = UserDeserializer.class)
     private User staffId;
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; 
 }

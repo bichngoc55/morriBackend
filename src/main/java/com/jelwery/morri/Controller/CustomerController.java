@@ -3,33 +3,37 @@ package com.jelwery.morri.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.CustomerDTO;
 import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Service.CustomerService;
 
-@RequestMapping("/customer")
+ @CrossOrigin(origins = "http://localhost:3000")  
+
 @RestController
+@RequestMapping("/customer")
+
 public class CustomerController {
     @Autowired
     CustomerService customerService;
 
     //create
     @PostMapping("/create")
-    public Customer createCustomer(@RequestBody Customer customer) throws Exception {
+    public Customer createCustomer(@RequestBody CustomerDTO customer) throws Exception {
+        System.out.println("Customer created: "+ customer);
         return customerService.createCustomer(customer);
     }
-    @PatchMapping("/{customerId}")
-    public Customer updateCustomer(@PathVariable("customerId") String customerId, @RequestBody Customer customer) throws Exception {
-        return customerService.updateCustomer(customerId,customer);
-    }
+ 
     @GetMapping("/")
     public List<Customer> getAllCustomers() throws Exception {
         return customerService.getAllCustomers();
@@ -46,5 +50,11 @@ public class CustomerController {
     @GetMapping("/getCustomerByPhone/{customerPhone}")
     public Customer getCustomerByPhone(@PathVariable("customerPhone") String customerPhone) throws Exception {
         return customerService.getCustomerByPhone(customerPhone);
+    }
+    @PatchMapping("/{customerId}")
+    public Customer updateCustomer(
+        @PathVariable("customerId") String customerId,
+        @RequestBody CustomerDTO customerDTO) throws Exception {
+        return customerService.updateCustomer(customerId, customerDTO);
     }
 }

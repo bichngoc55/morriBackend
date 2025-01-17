@@ -1,13 +1,12 @@
 package com.jelwery.morri.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.stereotype.Service;
 
+import com.jelwery.morri.DTO.PhieuServiceDTO;
 import com.jelwery.morri.Exception.DuplicateResourceException;
 import com.jelwery.morri.Exception.ResourceNotFoundException;
 import com.jelwery.morri.Model.PhieuService; 
@@ -61,60 +60,110 @@ public class PhieuDichVuService {
         return phieuServiceRepository.save(phieuService);
     }
 
-    public PhieuService updatePhieuService(String id, PhieuService phieuServiceDetails) {
-        PhieuService existingPhieuService = getPhieuServiceById(id);
+    // public PhieuService updatePhieuService(String id, PhieuService phieuServiceDetails) {
+    //     PhieuService existingPhieuService = getPhieuServiceById(id);
          
-        if (phieuServiceDetails.getNameService() != null) {
-            if (!existingPhieuService.getNameService().equals(phieuServiceDetails.getNameService()) &&
-                phieuServiceRepository.existsByNameService(phieuServiceDetails.getNameService())) {
-                throw new DuplicateResourceException("PhieuService with name " + phieuServiceDetails.getNameService() + " already exists");
+    //     if (phieuServiceDetails.getNameService() != null) {
+    //         if (!existingPhieuService.getNameService().equals(phieuServiceDetails.getNameService()) &&
+    //             phieuServiceRepository.existsByNameService(phieuServiceDetails.getNameService())) {
+    //             throw new DuplicateResourceException("PhieuService with name " + phieuServiceDetails.getNameService() + " already exists");
+    //         }
+    //         existingPhieuService.setNameService(phieuServiceDetails.getNameService());
+    //     }
+        
+    //     // if (phieuServiceDetails.getServicesId() != null) {
+    //     //     existingPhieuService.setServicesId(phieuServiceDetails.getServicesId());
+    //     // }
+        
+    //     if (phieuServiceDetails.getDescription() != null) {
+    //         existingPhieuService.setDescription(phieuServiceDetails.getDescription());
+    //     }
+        
+    //     if (phieuServiceDetails.getStaffLapHoaDon() != null) {
+    //         existingPhieuService.setStaffLapHoaDon(phieuServiceDetails.getStaffLapHoaDon());
+    //     }
+        
+    //     if (phieuServiceDetails.getStaffLamDichVu() != null) {
+    //         existingPhieuService.setStaffLamDichVu(phieuServiceDetails.getStaffLamDichVu());
+    //     }
+        
+    //     if (phieuServiceDetails.getQuantity() > 0) {
+    //         existingPhieuService.setQuantity(phieuServiceDetails.getQuantity());
+    //     }
+        
+    //     if (phieuServiceDetails.getTotalPrice() != null) {
+    //         existingPhieuService.setTotalPrice(phieuServiceDetails.getTotalPrice());
+    //     }
+        
+    //     if (phieuServiceDetails.getPhieuServiceStatus() != null) {
+    //         existingPhieuService.setPhieuServiceStatus(phieuServiceDetails.getPhieuServiceStatus());
+
+    //      }
+        
+        
+        
+    //     return phieuServiceRepository.save(existingPhieuService);
+    // }
+  public PhieuService updatePhieuService(String id, PhieuServiceDTO dto) {
+        PhieuService existingPhieuService = getPhieuServiceById(id);
+        
+        if (dto.getNameService() != null) {
+            if (!existingPhieuService.getNameService().equals(dto.getNameService()) &&
+                phieuServiceRepository.existsByNameService(dto.getNameService())) {
+                throw new DuplicateResourceException("PhieuService with name " + dto.getNameService() + " already exists");
             }
-            existingPhieuService.setNameService(phieuServiceDetails.getNameService());
+            existingPhieuService.setNameService(dto.getNameService());
         }
-        
-        // if (phieuServiceDetails.getServicesId() != null) {
-        //     existingPhieuService.setServicesId(phieuServiceDetails.getServicesId());
+
+        if (dto.getCustomerName() != null) {
+            existingPhieuService.setCustomerName(dto.getCustomerName());
+        }
+
+        if (dto.getCustomerPhone() != null) {
+            existingPhieuService.setCustomerPhone(dto.getCustomerPhone());
+        }
+
+        if (dto.getCustomerGender() != null) {
+            existingPhieuService.setCustomerGender(dto.getCustomerGender());
+        }
+
+       
+ 
+        if (dto.getDescription() != null) {
+            existingPhieuService.setDescription(dto.getDescription());
+        }
+
+        // if (dto.getStaffLapHoaDonId() != null) {
+        //     User staffLapHoaDon = userRepository.findById(dto.getStaffLapHoaDonId())
+        //         .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getStaffLapHoaDonId()));
+        //     existingPhieuService.setStaffLapHoaDon(staffLapHoaDon);
         // }
-        
-        if (phieuServiceDetails.getDescription() != null) {
-            existingPhieuService.setDescription(phieuServiceDetails.getDescription());
-        }
-        
-        // if (phieuServiceDetails.getStaffLapHoaDonId() != null) {
-        //     existingPhieuService.setStaffLapHoaDonId(phieuServiceDetails.getStaffLapHoaDonId());
+
+        // if (dto.getStaffLamDichVuId() != null) {
+        //     User staffLamDichVu = userRepository.findById(dto.getStaffLamDichVuId())
+        //         .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getStaffLamDichVuId()));
+        //     existingPhieuService.setStaffLamDichVu(staffLamDichVu);
         // }
-        
-        // if (phieuServiceDetails.getStaffLamDichVuId() != null) {
-        //     existingPhieuService.setStaffLamDichVuId(phieuServiceDetails.getStaffLamDichVuId());
-        // }
-        
-        if (phieuServiceDetails.getQuantity() > 0) {
-            existingPhieuService.setQuantity(phieuServiceDetails.getQuantity());
+
+        if (dto.getQuantity() != null && dto.getQuantity() > 0) {
+            existingPhieuService.setQuantity(dto.getQuantity());
         }
-        
-        if (phieuServiceDetails.getTotalPrice() != null) {
-            existingPhieuService.setTotalPrice(phieuServiceDetails.getTotalPrice());
+
+        if (dto.getTotalPrice() != null) {
+            existingPhieuService.setTotalPrice(dto.getTotalPrice());
         }
-        
-        if (phieuServiceDetails.getDeliveryDate() != null) {
-            existingPhieuService.setDeliveryDate(phieuServiceDetails.getDeliveryDate());
+
+        if (dto.getPhieuServiceStatus() != null) {
+            existingPhieuService.setPhieuServiceStatus(dto.getPhieuServiceStatus());
         }
-        
-        if (phieuServiceDetails.getDeliverystatus() != null) {
-            existingPhieuService.setDeliverystatus(phieuServiceDetails.getDeliverystatus());
-        }
-        
+
         return phieuServiceRepository.save(existingPhieuService);
     }
-
     public void deletePhieuService(String id) {
         PhieuService phieuService = getPhieuServiceById(id);
         phieuServiceRepository.delete(phieuService);
     }
  
-
-    public List<PhieuService> getPhieuServicesByStatus(PhieuService.DELIVERYSTATUS status) {
-        return phieuServiceRepository.findByDeliverystatus(status);
-    }
+ 
 
 }

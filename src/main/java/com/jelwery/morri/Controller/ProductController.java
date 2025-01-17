@@ -3,6 +3,7 @@ package com.jelwery.morri.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jelwery.morri.Model.Product;
 import com.jelwery.morri.Service.ProductService;
 
+@CrossOrigin(origins = "http://localhost:3000")  
 @RestController
 @RequestMapping("/jewelry")
 public class ProductController {
@@ -32,6 +34,10 @@ public class ProductController {
     @GetMapping("/{productId}")
     public Product getProduct(@PathVariable("productId") String productId) {
         return productService.getProductById(productId);
+    }
+    @GetMapping("/getProductByCode/{code}")
+    public Product getProductByCode(@PathVariable("code") String code) throws Exception {
+        return productService.getProductByCode(code);
     }
     @PatchMapping("/update/{productId}")
     public Product updateProduct(@PathVariable("productId") String productId, @RequestBody Product updatedProduct) {

@@ -1,8 +1,9 @@
 package com.jelwery.morri.Service;
 
  import java.util.List;
+import java.util.Optional;
 
- import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,18 +32,36 @@ public class ProductService {
         if (productRepository.findByCode(product.getCode()).isPresent()) {
             throw new DuplicateResourceException("Product with code " + product.getCode() + " already exists");
         }
+        if (product.getSupplierId() != null) {
+            Optional<Supplier> supplier = supplierRespository.findById(product.getSupplierId().getId());
+            if (supplier.isPresent()) {
+                product.setSupplierId(supplier.get()); 
+            } else {
+                product.setSupplierId(null); 
+            }
+        } else {
+            product.setSupplierId(null);
+        }
     
-        Supplier supplier = supplierRespository.findById(product.getSupplierId().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID"));
-    
-        product.setSupplierId(supplier);
-    
+        // Lưu sản phẩm và trả về
         Product savedProduct = productRepository.save(product);
         return savedProduct;
     }
+    
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     } 
+
+     public Product getProductByCode(String code) throws Exception {
+        Optional<Product> otp = productRepository.findByCode(code);
+        if (otp.isPresent()) {
+            return otp.get();
+        }
+        else {
+            throw new Exception("product with code " + code + " not found");
+        }
+    }
+
 
     public Product getProductById(String id) {
         return productRepository.findById(id)
@@ -68,6 +87,10 @@ public class ProductService {
 
         if (updatedProduct.getDescription() != null) {
             existingProduct.setDescription(updatedProduct.getDescription());
+        }
+
+        if (updatedProduct.getMaterial() != null) {
+            existingProduct.setMaterial(updatedProduct.getMaterial());
         }
 
         if (updatedProduct.getCostPrice() != null) {

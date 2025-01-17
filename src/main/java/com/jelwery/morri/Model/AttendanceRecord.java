@@ -3,6 +3,10 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.UserDeserializer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +24,9 @@ public class AttendanceRecord {
     private Double workingHours;
     private String notes;
     private CHECKTYPE checkType;
-
+    @DocumentReference
+    @JsonDeserialize(using = UserDeserializer.class)
+    private User employee; 
     public enum CHECKTYPE {
         IN,
         OUT

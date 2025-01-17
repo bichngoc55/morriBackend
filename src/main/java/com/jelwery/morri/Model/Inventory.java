@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jelwery.morri.DTO.InventoryProductDeserializer;
 import com.jelwery.morri.DTO.ProductSeserializerForOne;
 import com.jelwery.morri.DTO.SupplierDeserializer;
 import com.jelwery.morri.DTO.UserDeserializer;
@@ -38,18 +39,7 @@ public class Inventory {
     @CreatedDate
     private LocalDateTime ngayNhapKho;
     private Double totalPrice;
-
+    @DocumentReference
+    @JsonDeserialize(using = InventoryProductDeserializer.class)
     private ArrayList<InventoryProduct> inventoryProducts;
-
-    // Đưa InventoryProduct ra ngoài lớp Inventory và làm static
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class InventoryProduct {
-        @DocumentReference(lazy = true)
-        @JsonDeserialize(using = ProductSeserializerForOne.class)  
-        private Product product;
-        private int enteredQuantity;
-    }
-    
 }
