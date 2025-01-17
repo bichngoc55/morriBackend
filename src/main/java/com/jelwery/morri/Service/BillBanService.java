@@ -133,7 +133,7 @@ public class BillBanService {
             // billBanRepository.deleteById(billBanId);
             existingBillBan.setStatus(newStatus);
 
-            return existingBillBan; 
+            return billBanRepository.save(existingBillBan); 
         }
     
         if (newStatus != null) {
