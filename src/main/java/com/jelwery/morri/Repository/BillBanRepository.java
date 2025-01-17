@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.jelwery.morri.Model.BillBan;
+import com.jelwery.morri.Model.Customer;
 import com.jelwery.morri.Model.OrderDetail;
 
 
@@ -15,6 +16,7 @@ public interface BillBanRepository extends MongoRepository<BillBan, String> {
     List<BillBan> findByStaffName(String name);
     List<BillBan> findByStaffPhoneNumber(String phoneNumber);
     List<BillBan> findByCustomerName(String name);
+        List<BillBan> findByCustomer(Customer customer);
     List<BillBan> findByCustomerPhoneNumber(String phoneNumber);
     List<BillBan> findByCreateAtBetween(LocalDateTime start, LocalDateTime end);
     List<BillBan> findByCreateAt(LocalDateTime createAt);

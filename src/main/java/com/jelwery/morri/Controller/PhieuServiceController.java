@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jelwery.morri.DTO.PhieuServiceDTO;
 import com.jelwery.morri.Model.PhieuService;
 import com.jelwery.morri.Service.PhieuDichVuService;
 @CrossOrigin(origins = "http://localhost:3000")  
@@ -47,14 +48,21 @@ public class PhieuServiceController {
         return ResponseEntity.ok(createdPhieuService);
     }
 
-    @PutMapping("/{id}")
+    // @PutMapping("/{id}")
+    // public ResponseEntity<PhieuService> updatePhieuService(
+    //         @PathVariable String id,
+    //         @RequestBody PhieuService phieuServiceDetails) {
+    //     PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDetails);
+    //     return ResponseEntity.ok(updatedPhieuService);
+    // }
+
+     @PutMapping("/{id}")
     public ResponseEntity<PhieuService> updatePhieuService(
             @PathVariable String id,
-            @RequestBody PhieuService phieuServiceDetails) {
-        PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDetails);
+            @RequestBody PhieuServiceDTO phieuServiceDTO) {
+        PhieuService updatedPhieuService = phieuServiceService.updatePhieuService(id, phieuServiceDTO);
         return ResponseEntity.ok(updatedPhieuService);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePhieuService(@PathVariable String id) {
         phieuServiceService.deletePhieuService(id);

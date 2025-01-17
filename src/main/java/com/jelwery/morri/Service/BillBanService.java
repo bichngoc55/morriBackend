@@ -107,21 +107,32 @@ public class BillBanService {
      public List<BillBan> getAllBillBan() {
         return billBanRepository.findAll();
     } 
+    public List<BillBan> getBillBanByCustomerId(String customerId) {
+        Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+        
+        return billBanRepository.findByCustomer(customer);
+    }
+    
     public BillBan getBillBanById(String id) {
         return billBanRepository.findById(id).orElse(null);
     }
 
     public BillBan updateBillBanStatus(String billBanId, BillStatus newStatus) {
+        System.out.print(newStatus);
         BillBan existingBillBan = billBanRepository.findById(billBanId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bill ban not found with id: " + billBanId));
-    
+                System.out.print(existingBillBan);
+
         if (newStatus != null && newStatus.equals(BillStatus.CANCELLED)) {
             for (OrderDetail orderDetail : existingBillBan.getOrderDetails()) {
                 Product product = orderDetail.getProduct();
                 product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
                 productRepository.save(product); 
             }
-            billBanRepository.deleteById(billBanId);
+            // billBanRepository.deleteById(billBanId);
+            existingBillBan.setStatus(newStatus);
+
             return existingBillBan; 
         }
     
